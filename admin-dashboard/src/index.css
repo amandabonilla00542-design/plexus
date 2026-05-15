@@ -860,11 +860,6 @@ h3 {
     font-size: clamp(0.95rem, 2.8vw, 1.15rem);
   }
 
-  /* One column until the shell is truly desktop-wide */
-  .admin-desk-split {
-    grid-template-columns: 1fr;
-  }
-
   .admin-desk-split__roster {
     max-height: min(52dvh, 480px);
   }
@@ -895,20 +890,29 @@ h3 {
   }
 }
 
-/* Desk profile + roster */
+/* Desk profile + roster — stack below 900px (accounts list under quote) */
 .admin-desk-split {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 16px;
-  align-items: start;
+  align-items: stretch;
   margin-bottom: 20px;
   min-width: 0;
-  grid-template-columns: 1fr;
+  width: 100%;
+}
+
+.admin-desk-split__profile,
+.admin-desk-split__roster {
+  width: 100%;
+  max-width: 100%;
 }
 
 @media (min-width: 900px) {
   .admin-desk-split {
+    display: grid;
     grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.15fr);
     gap: 20px 24px;
+    align-items: start;
   }
 }
 
@@ -926,9 +930,33 @@ h3 {
 }
 
 @media (max-width: 899px) {
+  .admin-desk-split {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .admin-desk-split__profile {
+    order: 1;
+  }
+
   .admin-desk-split__roster {
+    order: 2;
     max-height: none;
     overflow-y: visible;
+  }
+}
+
+@media (max-width: 559px) {
+  .app-phone {
+    max-width: 100%;
+    margin-top: 0;
+    margin-bottom: 0;
+    border-radius: 0;
+    min-height: 100dvh;
+  }
+
+  .app-viewport {
+    padding: 0;
   }
 }
 
