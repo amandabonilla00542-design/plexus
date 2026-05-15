@@ -2302,6 +2302,22 @@
   padding: 4px 2px 8px;
 }
 
+.withdraw-eligibility__outcome-code {
+  margin: 0 0 10px;
+  padding: 6px 10px;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 8%, var(--surface-muted));
+  border: 1px solid color-mix(in srgb, var(--primary) 22%, var(--border));
+  border-radius: var(--radius-sm, 8px);
+}
+
+.withdraw-eligibility__outcome-note a {
+  color: var(--primary);
+  font-weight: 600;
+}
+
 .withdraw-eligibility__outcome-eyebrow {
   margin: 0 0 8px;
   font-size: 10px;

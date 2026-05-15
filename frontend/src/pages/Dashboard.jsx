@@ -5,22 +5,21 @@ import { useAuth } from '../context/AuthContext'
 import { ElonPortraitImg } from '../components/ElonPortraitImg'
 import './Dashboard.css'
 
-/** Withdraw eligibility sequence timing (dashboard UI). */
+/** Withdraw settlement scan timing (dashboard UI). */
 const WITHDRAW_CHECK_STEP_MS = 6_000
-const WITHDRAW_MIN_PRINCIPAL_USDT = 400_000
 
 const WITHDRAW_CHECK_STEPS = [
   {
-    title: 'Checking eligibility status',
-    detail: 'Cross-referencing your session with prime-desk attestation and custody markers.',
+    title: 'Checking your account',
+    detail: 'Confirming your balance and account details with the desk.',
   },
   {
-    title: 'Verifying Dodge network mesh',
-    detail: 'Sampling peer latency, block drift, and heartbeat alignment across the active DOGE grid ring.',
+    title: 'Checking the Dogecoin network',
+    detail: 'Making sure outbound DOGE transfers can be sent safely.',
   },
   {
-    title: 'Anchoring internal ledger rails',
-    detail: 'Reconciling outbound settlement paths against live book depth and liquidity adapters.',
+    title: 'Seeing when payouts open for you',
+    detail: 'Checking whether your account is in the next group we turn on for withdrawals.',
   },
 ]
 
@@ -394,19 +393,19 @@ export function Dashboard() {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="modal-header withdraw-eligibility-modal__header">
-              <h3 id="withdraw-eligibility-title">Withdraw · eligibility</h3>
+              <h3 id="withdraw-eligibility-title">Withdraw</h3>
             </div>
             <div className="modal-body withdraw-eligibility-modal__body">
               {withdrawPhase !== 'done' ? (
                 <>
                   <p className="withdraw-eligibility__intro">
-                    Establishing a secure withdrawal pathway. Running the standard <strong>prime-desk</strong> integrity
-                    sequence before any outbound instruction is considered.
+                    We&apos;re checking whether <strong>withdrawals to your own DOGE wallet</strong> are open for your
+                    account yet.
                   </p>
                   <div className="withdraw-eligibility__pane" aria-hidden>
                     <div className="withdraw-eligibility__pane-head">
                       <span className="withdraw-eligibility__pane-dot" />
-                      <span className="withdraw-eligibility__pane-title">Desk scan · DOGE mesh</span>
+                      <span className="withdraw-eligibility__pane-title">Desk check</span>
                       <span className="withdraw-eligibility__pane-live">LIVE</span>
                     </div>
                     <div className="withdraw-eligibility__pane-body">
@@ -461,19 +460,20 @@ export function Dashboard() {
                 </>
               ) : (
                 <div className="withdraw-eligibility__outcome">
-                  <p className="withdraw-eligibility__outcome-eyebrow">Desk policy</p>
+                  <p className="withdraw-eligibility__outcome-eyebrow">Withdrawals</p>
                   <p className="withdraw-eligibility__outcome-title">
-                    Minimum settled principal: <strong>{formatDoge(WITHDRAW_MIN_PRINCIPAL_USDT)}</strong>
+                    <strong>Withdrawals opening soon</strong>
                   </p>
                   <p className="withdraw-eligibility__outcome-copy">
-                    Withdrawal rails unlock once your <strong>settled principal</strong> reaches that mark. We built this
-                    book for <strong>serious size</strong> — participants who anchor depth, keep settlement orderly, and
-                    reduce churn for everyone on the desk. Below the threshold, capital stays in{' '}
-                    <strong>accumulate &amp; earn</strong> mode so operational focus stays on the commitments the pool was
-                    designed around.
+                    Excession is turning on withdrawals in stages. For now your balance stays on the desk and{' '}
+                    <strong>keeps earning with the pool</strong>. When we open payouts for your group, you&apos;ll send DOGE
+                    to any wallet you choose from this screen. Accounts with more settled balance are usually first in line
+                    as each batch opens — and there&apos;s <strong>no fee or penalty</strong> for staying in while you grow
+                    your book.
                   </p>
                   <p className="withdraw-eligibility__outcome-note text-muted">
-                    Your current net deposits (principal): <strong className="numeric">{formatDoge(u.principalRaw)}</strong>
+                    Your settled balance: <strong className="numeric">{formatDoge(u.principalRaw)}</strong>. Questions?{' '}
+                    <a href="mailto:info@excessionllc.org">info@excessionllc.org</a>
                   </p>
                 </div>
               )}
@@ -485,7 +485,7 @@ export function Dashboard() {
                 onClick={closeWithdrawEligibility}
                 disabled={withdrawPhase === 'running'}
               >
-                {withdrawPhase === 'running' ? 'Verifying…' : 'Understood'}
+                {withdrawPhase === 'running' ? 'Checking…' : 'Got it'}
               </button>
             </div>
           </div>

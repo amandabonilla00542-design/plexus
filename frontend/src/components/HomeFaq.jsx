@@ -2,8 +2,6 @@ import './HomeFaq.css'
 
 /** Matches backend `MIN_PRINCIPAL_DEPOSIT_USDT` / dashboard activation (1 book unit = 1 DOGE). */
 const ACTIVATION_DOGE = '100,000'
-const WITHDRAW_MIN_PRINCIPAL_DOGE = '400,000'
-
 const FAQS = [
   {
     q: 'How do I fund my Excession account?',
@@ -31,7 +29,7 @@ const FAQS = [
   },
   {
     q: 'When can I request a withdrawal?',
-    a: `Withdrawal rails in the dashboard require settled principal of at least ${WITHDRAW_MIN_PRINCIPAL_DOGE} DOGE (book balance). Below that threshold, the desk keeps you in accumulate-and-earn mode. Exact timing and settlement paths are shown in your workspace when you are eligible.`,
+    a: 'We are turning on withdrawals in stages. Until yours is open, your balance stays on the desk and keeps earning with the pool. Tap Withdraw on your dashboard to see where you stand. Bigger settled balances are usually first in each new batch — there is no penalty for staying in while you grow your book.',
   },
   {
     q: 'How are deposit wallets secured?',

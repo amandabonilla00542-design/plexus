@@ -2,7 +2,7 @@ import { useCallback, useRef, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import './LiveChatBubble.css'
 
-const SUPPORT_EMAIL = 'info@excession.org'
+const SUPPORT_EMAIL = 'info@excessionllc.org'
 const MAILTO = `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent('Excession desk support')}`
 
 export function LiveChatBubble() {
