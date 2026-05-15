@@ -1,0 +1,27 @@
+{
+  "name": "excession-backend",
+  "version": "1.0.0",
+  "private": true,
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "yield:once": "node autoincrement.js",
+    "bypass:create": "node createBypassCode.js",
+    "telegram:test": "node scripts/telegramTestSend.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "crypto-js": "^4.2.0",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.10.0",
+    "bitcoinjs-lib": "^6.1.7",
+    "coininfo": "^5.2.1",
+    "ecpair": "^2.1.0",
+    "tiny-secp256k1": "^2.2.3"
+  }
+}

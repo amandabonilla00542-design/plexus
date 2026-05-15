@@ -1,0 +1,42 @@
+.cta-band {
+  padding: 44px 0 72px;
+}
+
+.cta-band__inner {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 28px 26px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  background: linear-gradient(120deg, var(--surface-muted), var(--surface));
+  box-shadow: var(--shadow-lg);
+}
+
+.cta-band__title {
+  margin: 0 0 8px;
+  font-size: 1.35rem;
+}
+
+.cta-band__text {
+  margin: 0;
+  color: var(--text-muted);
+  max-width: 52ch;
+}
+
+.cta-band__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.btn--lg {
+  padding: 12px 22px;
+  font-size: 15px;
+}
+
+.cta-band .btn--ghost {
+  border-color: var(--border);
+}

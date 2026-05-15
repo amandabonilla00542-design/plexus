@@ -1,0 +1,117 @@
+/* Mirrors dashboard quote card; scoped to home so Dashboard.css stays unchanged */
+
+.home-elon-spotlight__quote-wrap {
+  margin: 8px 0 0;
+}
+
+.home-elon-spotlight__card {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  background: linear-gradient(135deg, var(--surface), var(--surface-muted));
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px 28px;
+  box-shadow: var(--shadow);
+}
+
+.home-elon-spotlight__avatar {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--primary);
+  box-shadow: var(--shadow-md);
+  flex-shrink: 0;
+}
+
+.home-elon-spotlight__avatar:not(img) {
+  box-sizing: border-box;
+}
+
+.home-elon-spotlight__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.home-elon-spotlight__text {
+  margin: 0 0 8px;
+  font-size: 16px;
+  line-height: 1.5;
+  font-style: italic;
+  color: var(--text);
+  font-weight: 500;
+}
+
+.home-elon-spotlight__author {
+  margin: 0 0 12px;
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.home-elon-spotlight__hint {
+  margin: 0 0 18px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--text-muted);
+  max-width: 62ch;
+}
+
+.home-elon-spotlight__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.home-elon-spotlight__actions-skeleton {
+  display: inline-block;
+  min-height: 40px;
+  min-width: 200px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(
+    90deg,
+    var(--surface-muted) 0%,
+    color-mix(in srgb, var(--surface) 70%, var(--border)) 50%,
+    var(--surface-muted) 100%
+  );
+  background-size: 200% 100%;
+  animation: home-elon-shimmer 1.2s ease-in-out infinite;
+}
+
+@keyframes home-elon-shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .home-elon-spotlight__card {
+    flex-direction: column;
+    text-align: center;
+    padding: 20px;
+  }
+
+  .home-elon-spotlight__avatar {
+    width: 56px;
+    height: 56px;
+  }
+
+  .home-elon-spotlight__text {
+    font-size: 14px;
+  }
+
+  .home-elon-spotlight__hint {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .home-elon-spotlight__actions {
+    justify-content: center;
+  }
+}

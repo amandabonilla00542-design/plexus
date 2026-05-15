@@ -1,0 +1,67 @@
+.pricing-snap {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+}
+
+.pricing-snap__layout {
+  display: grid;
+  gap: 28px;
+  align-items: start;
+}
+
+@media (min-width: 960px) {
+  .pricing-snap__layout {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+    gap: 40px;
+  }
+}
+
+.pricing-snap__intro .section-lead {
+  margin-bottom: 20px;
+}
+
+.pricing-snap__panel {
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  background: var(--bg);
+  padding: 22px 20px 20px;
+  box-shadow: var(--shadow);
+}
+
+.pricing-snap__panel-note {
+  margin: 0 0 14px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.pricing-snap__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.pricing-snap__table th,
+.pricing-snap__table td {
+  padding: 12px 10px 12px 0;
+  vertical-align: top;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+}
+
+.pricing-snap__table tr:last-child th,
+.pricing-snap__table tr:last-child td {
+  border-bottom: none;
+}
+
+.pricing-snap__table th {
+  font-weight: 600;
+  color: var(--text);
+  width: 42%;
+}
+
+.pricing-snap__table td {
+  color: var(--text-muted);
+}

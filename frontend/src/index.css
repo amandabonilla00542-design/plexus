@@ -1,0 +1,235 @@
+/* Excession LLC — design tokens (light default, dark via [data-theme="dark"]) */
+:root,
+[data-theme='light'] {
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-display: 'Sora', var(--font-sans);
+
+  --bg: #f4f8fc;
+  --bg-elevated: #ffffff;
+  --surface: #ffffff;
+  --surface-muted: #eef4fb;
+  --text: #0c1629;
+  --text-muted: #5a6d85;
+  --border: #d8e3ef;
+  --shadow: 0 1px 3px rgba(15, 35, 71, 0.08);
+  --shadow-lg: 0 18px 50px rgba(15, 35, 71, 0.12);
+
+  --primary: #1a5c96;
+  --primary-hover: #144a78;
+  --primary-soft: rgba(26, 92, 150, 0.1);
+  --accent: #e8a317;
+  --accent-hover: #d49412;
+  --success: #0d8a5b;
+  --danger: #c02626;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --header-h: 72px;
+}
+
+[data-theme='dark'] {
+  --bg: #070b12;
+  --bg-elevated: #0d121c;
+  --surface: #101a2a;
+  --surface-muted: #152238;
+  --text: #e8eef7;
+  --text-muted: #8fa3bf;
+  --border: #243044;
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 22px 60px rgba(0, 0, 0, 0.45);
+
+  --primary: #4d9fe8;
+  --primary-hover: #6eb2f0;
+  --primary-soft: rgba(77, 159, 232, 0.15);
+  --accent: #f0b429;
+  --accent-hover: #f5c24d;
+  --success: #34d399;
+  --danger: #f87171;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: light dark;
+  overflow-x: hidden;
+  overflow-x: clip;
+  width: 100%;
+  max-width: 100%;
+}
+
+html[data-theme='light'] {
+  color-scheme: light;
+}
+
+html[data-theme='dark'] {
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  overflow-x: clip;
+  font-family: var(--font-sans), system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  font-synthesis: none;
+  font-optical-sizing: auto;
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition:
+    background-color 0.28s ease,
+    color 0.22s ease;
+}
+
+#root {
+  min-height: 100vh;
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  overflow-x: clip;
+  display: flex;
+  flex-direction: column;
+}
+
+a {
+  color: var(--primary);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+button {
+  font-family: inherit;
+}
+
+h1,
+h2,
+h3,
+.display {
+  font-family: var(--font-display), var(--font-sans), system-ui, sans-serif;
+  letter-spacing: -0.02em;
+  font-weight: 700;
+}
+
+p,
+li,
+label,
+input,
+button {
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+.numeric {
+  font-variant-numeric: tabular-nums;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 16px;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  font-family: inherit;
+  transition:
+    background 0.18s ease,
+    color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.btn:hover {
+  text-decoration: none;
+}
+
+.btn--ghost {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.btn--ghost:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.btn--primary {
+  background: var(--primary);
+  color: #fff;
+  box-shadow: 0 2px 10px rgba(26, 92, 150, 0.25);
+}
+
+.btn--primary:hover {
+  background: var(--primary-hover);
+}
+
+[data-theme='dark'] .btn--primary {
+  box-shadow: 0 2px 14px rgba(77, 159, 232, 0.25);
+}
+
+.btn--block {
+  width: 100%;
+  justify-content: center;
+}
+
+.text-muted {
+  color: var(--text-muted);
+}
+
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: clamp(14px, 4vw, 20px);
+  padding-right: clamp(14px, 4vw, 20px);
+  box-sizing: border-box;
+}
+
+.section-block {
+  padding: 56px 0 64px;
+}
+
+.section-eyebrow {
+  margin: 0 0 10px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+
+.section-title {
+  margin: 0 0 12px;
+  font-size: clamp(1.45rem, 2.4vw, 2rem);
+  line-height: 1.2;
+}
+
+.section-lead {
+  margin: 0;
+  font-size: 1.05rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  max-width: 62ch;
+}

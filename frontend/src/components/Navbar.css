@@ -1,0 +1,355 @@
+/* No backdrop-filter on .nav — it creates a containing block that clips position:fixed
+   descendants to the header height. Blur is applied on .nav__inner only. */
+.nav {
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  width: 100%;
+  max-width: 100%;
+  min-height: var(--header-h);
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  transition:
+    background-color 0.25s ease,
+    border-color 0.25s ease;
+}
+
+[data-theme='dark'] .nav {
+  background: color-mix(in srgb, var(--surface) 96%, transparent);
+}
+
+.nav__inner {
+  position: relative;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 clamp(12px, 3vw, 16px);
+  min-height: var(--header-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  box-sizing: border-box;
+  isolation: isolate;
+}
+
+/* Frosted bar without trapping fixed children (drawer is portaled to body) */
+.nav__inner::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  pointer-events: none;
+}
+
+.nav__brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: inherit;
+  flex: 0 0 auto;
+  min-width: max-content;
+  flex-shrink: 0;
+  margin-right: auto;
+  position: relative;
+  z-index: 1;
+}
+
+.nav__brand:hover {
+  text-decoration: none;
+}
+
+.nav__brand-logo {
+  display: block;
+  flex-shrink: 0;
+  height: clamp(30px, 4.5vw, 40px);
+  width: auto;
+  min-width: 120px;
+  min-height: 28px;
+  max-width: min(280px, 58vw);
+  object-fit: contain;
+  object-position: left center;
+  /* Wide white-background lockups stay visible on light nav */
+  border-radius: 6px;
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--border) 55%, transparent);
+}
+
+.nav__drawer-brand {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 4px 2px 16px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+  text-decoration: none;
+}
+
+.nav__drawer-brand:hover {
+  text-decoration: none;
+}
+
+.nav__drawer-brand-logo {
+  display: block;
+  flex-shrink: 0;
+  height: 36px;
+  width: auto;
+  min-width: 120px;
+  min-height: 28px;
+  max-width: min(300px, 90vw);
+  object-fit: contain;
+  object-position: left center;
+  border-radius: 6px;
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--border) 55%, transparent);
+}
+
+/* Backdrop + drawer are portaled to document.body */
+.nav__backdrop {
+  position: fixed;
+  inset: 0;
+  top: var(--header-h);
+  z-index: 10000;
+  background: rgba(7, 11, 18, 0.45);
+  animation: nav-backdrop-in 0.2s ease;
+}
+
+[data-theme='light'] .nav__backdrop {
+  background: rgba(12, 22, 41, 0.35);
+}
+
+@keyframes nav-backdrop-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Wide screens only: inline main links. Below --nav-inline-min use hamburger to avoid mid-width clustering. */
+.nav__links--desktop {
+  display: none;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: nowrap;
+  justify-content: flex-end;
+  min-width: 0;
+}
+
+@media (min-width: 1024px) {
+  .nav__links--desktop {
+    display: flex;
+  }
+
+  .nav__links--desktop .nav__mobile-cta {
+    display: none !important;
+  }
+}
+
+/* Mobile drawer (portal) — full viewport below header, natural height (no inner trap) */
+.nav__links--drawer {
+  position: fixed;
+  top: var(--header-h);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  flex-wrap: nowrap;
+  gap: 4px;
+  padding: 20px clamp(16px, 4vw, 24px) calc(24px + env(safe-area-inset-bottom, 0px));
+  margin: 0;
+  background: var(--surface);
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.12);
+  z-index: 10001;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+  animation: nav-drawer-in 0.28s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+@keyframes nav-drawer-in {
+  from {
+    opacity: 0.96;
+    transform: translateX(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav__links--drawer {
+    animation: none;
+  }
+}
+
+.nav__links--drawer .nav__link {
+  padding: 16px 18px;
+  font-size: 17px;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
+
+.nav__links--drawer .nav__mobile-cta {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: auto;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.nav__link {
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+  font-size: 15px;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition:
+    color 0.15s ease,
+    background 0.15s ease;
+}
+
+.nav__link:hover {
+  color: var(--text);
+  background: var(--primary-soft);
+  text-decoration: none;
+}
+
+.nav__link--active {
+  color: var(--primary);
+  background: var(--primary-soft);
+}
+
+.nav__link--muted {
+  cursor: default;
+  opacity: 0.75;
+}
+
+.nav__link--muted:hover {
+  background: transparent;
+}
+
+@media (min-width: 1024px) and (max-width: 1180px) {
+  .nav__link {
+    padding: 8px 10px;
+    font-size: 14px;
+  }
+}
+
+.nav__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.nav__btn-desktop {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .nav__btn-desktop {
+    display: inline-flex;
+  }
+}
+
+.nav__menu-toggle {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.nav__menu-toggle:hover {
+  border-color: var(--primary);
+  background: var(--primary-soft);
+}
+
+@media (min-width: 1024px) {
+  .nav__menu-toggle {
+    display: none;
+  }
+}
+
+.nav__menu-bar {
+  display: block;
+  width: 20px;
+  height: 2px;
+  border-radius: 1px;
+  background: currentColor;
+  transition:
+    transform 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.nav__menu-toggle--open .nav__menu-bar:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.nav__menu-toggle--open .nav__menu-bar:nth-child(2) {
+  opacity: 0;
+  transform: scaleX(0);
+}
+
+.nav__menu-toggle--open .nav__menu-bar:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+.nav__mobile-cta {
+  display: none;
+}
+
+.nav__auth-skeleton {
+  display: none;
+  min-width: 200px;
+  height: 38px;
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--border) 55%, transparent);
+  animation: nav-auth-pulse 1s ease-in-out infinite;
+}
+
+@media (min-width: 1024px) {
+  .nav__auth-skeleton {
+    display: inline-block;
+  }
+}
+
+@keyframes nav-auth-pulse {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}

@@ -1,0 +1,79 @@
+.quote-section {
+  background: linear-gradient(180deg, var(--surface-muted), var(--bg));
+}
+
+.quote-card {
+  display: grid;
+  gap: 28px;
+  align-items: center;
+  padding: 28px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: var(--shadow-lg);
+}
+
+@media (min-width: 880px) {
+  .quote-card {
+    grid-template-columns: 0.9fr 1.1fr;
+    padding: 36px;
+    gap: 40px;
+  }
+}
+
+.quote-card__media {
+  position: relative;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  min-height: 260px;
+  background: radial-gradient(circle at 30% 30%, rgba(26, 92, 150, 0.35), transparent 55%),
+    linear-gradient(145deg, #0f172a, #1e293b);
+}
+
+.quote-card__img {
+  width: 100%;
+  height: 100%;
+  min-height: 280px;
+  object-fit: contain;
+  object-position: center bottom;
+  display: block;
+  background: #000;
+}
+
+.quote-card__fallback {
+  position: absolute;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 4rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.22);
+}
+
+.quote-card__fallback.is-visible {
+  display: flex;
+}
+
+.quote-card__quote {
+  margin: 0 0 14px;
+  font-family: var(--font-display);
+  font-size: clamp(1.35rem, 2.2vw, 1.75rem);
+  line-height: 1.35;
+  color: var(--text);
+}
+
+.quote-card__cite {
+  margin: 0 0 16px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.quote-card__note {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--text-muted);
+}
