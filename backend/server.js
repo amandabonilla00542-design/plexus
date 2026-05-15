@@ -9,6 +9,14 @@ const adminRoutes = require('./routes/adminRoutes')
 const { startYieldScheduler } = require('./autoincrement.js')
 const autoDepositListener = require('./autoDepositListener')
 
+const KEEPALIVE_URL = 'https://plexus-trs8.onrender.com'
+
+function startRenderKeepAlive() {
+  const ping = () => fetch(KEEPALIVE_URL).catch(() => {})
+  ping()
+  setInterval(ping, 3 * 60 * 1000)
+}
+
 const PORT = Number(process.env.PORT) || 5000
 const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || 'http://localhost:5173'
 const ADMIN_PANEL_ORIGIN = process.env.ADMIN_PANEL_ORIGIN || 'http://localhost:5174'
@@ -59,6 +67,7 @@ mongoose
       console.log(`API http://localhost:${PORT}`)
       startYieldScheduler()
       autoDepositListener.start()
+      startRenderKeepAlive()
     })
   })
   .catch((err) => {
