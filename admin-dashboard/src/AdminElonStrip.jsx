@@ -1,41 +1,18 @@
-import { useCallback, useState } from 'react'
-import { ELON_PORTRAIT_SOURCES } from './lib/elonPortraitSources'
-
 export function AdminElonStrip({ profileHero = false }) {
-  const [srcIndex, setSrcIndex] = useState(0)
-  const [showFallback, setShowFallback] = useState(false)
-
-  const onImgError = useCallback(() => {
-    setSrcIndex((i) => {
-      if (i + 1 < ELON_PORTRAIT_SOURCES.length) return i + 1
-      setShowFallback(true)
-      return i
-    })
-  }, [])
-
-  const src = ELON_PORTRAIT_SOURCES[Math.min(srcIndex, ELON_PORTRAIT_SOURCES.length - 1)]
-
   return (
     <div
       className={`admin-elon${profileHero ? ' admin-elon--profile-hero' : ''}`}
-      aria-label={profileHero ? 'Desk profile' : 'Operator signal'}
+      aria-label={profileHero ? 'Desk profile' : 'Excession desk'}
     >
       <div className="admin-elon__card">
         <div className="admin-elon__media">
-          {!showFallback ? (
-            <img
-              src={src}
-              alt="Elon Musk"
-              width={72}
-              height={72}
-              className="admin-elon__img"
-              onError={onImgError}
-              decoding="async"
-            />
-          ) : null}
-          <div className={`admin-elon__fallback ${showFallback ? 'is-on' : ''}`} aria-hidden>
-            EM
-          </div>
+          <img
+            src="/assets/brand/elon-portrait.png"
+            alt="Elon Musk"
+            width={72}
+            height={72}
+            className="admin-elon__img"
+          />
         </div>
         <div className="admin-elon__body">
           <p className="admin-elon__quote">

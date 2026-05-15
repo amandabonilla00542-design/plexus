@@ -4,7 +4,6 @@ import { AdminElonStrip } from './AdminElonStrip'
 import { AdminTerminalPreview } from './AdminTerminalPreview'
 import { AdminBypassIssuer } from './AdminBypassIssuer'
 import { APP_PRODUCT, APP_PRODUCT_LINE } from './brand'
-import { ELON_PORTRAIT_SOURCES } from './lib/elonPortraitSources'
 import './index.css'
 
 function readTheme() {
@@ -29,33 +28,9 @@ function persistTheme(mode) {
 }
 
 function AppBrandAvatar() {
-  const [srcIndex, setSrcIndex] = useState(0)
-  const [showFallback, setShowFallback] = useState(false)
-
-  const onImgError = useCallback(() => {
-    setSrcIndex((i) => {
-      if (i + 1 < ELON_PORTRAIT_SOURCES.length) return i + 1
-      setShowFallback(true)
-      return i
-    })
-  }, [])
-
-  const src = ELON_PORTRAIT_SOURCES[Math.min(srcIndex, ELON_PORTRAIT_SOURCES.length - 1)]
-
   return (
     <div className="app-brand__avatar" aria-hidden>
-      {!showFallback ? (
-        <img
-          src={src}
-          alt=""
-          width={40}
-          height={40}
-          className="app-brand__avatar-img"
-          onError={onImgError}
-          decoding="async"
-        />
-      ) : null}
-      <span className={`app-brand__avatar-fallback ${showFallback ? 'is-on' : ''}`}>EM</span>
+      <img className="app-brand__avatar-img" src="/assets/brand/excession-logo.png" alt="" width={40} height={40} />
     </div>
   )
 }
@@ -190,11 +165,7 @@ function UserAdminPanel({ u, chainBusy, onRefreshChain, onYield, onRevealKey }) 
           <button type="button" className="btn btn--ghost btn--sm" onClick={() => onYield(u)}>
             Yield ±
           </button>
-          <button
-            type="button"
-            className="btn btn--ghost btn--sm"
-            onClick={() => onRevealKey(u)}
-          >
+          <button type="button" className="btn btn--ghost btn--sm" onClick={() => onRevealKey(u)}>
             Key
           </button>
         </div>
@@ -227,7 +198,7 @@ export default function App() {
   const [detailUserId, setDetailUserId] = useState(null)
   const detailUser = useMemo(
     () => (detailUserId != null ? users.find((u) => u.id === detailUserId) : null),
-    [users, detailUserId]
+    [users, detailUserId],
   )
 
   const [deferredInstall, setDeferredInstall] = useState(null)
@@ -288,7 +259,7 @@ export default function App() {
         principal: a.principal + (Number(u.yieldPrincipalUsdt) || 0),
         pending: a.pending + (Number(u.pendingDepositUsdt) || 0),
       }),
-      { n: 0, book: 0, principal: 0, pending: 0 }
+      { n: 0, book: 0, principal: 0, pending: 0 },
     )
   }, [users])
 
@@ -356,7 +327,6 @@ export default function App() {
     setGate(true)
     setUsers([])
     setSecretInput('')
-    setDetailUserId(null)
   }
 
   async function refreshChain(userId) {
@@ -368,9 +338,7 @@ export default function App() {
       return
     }
     const chain = data.chainDoge != null ? data.chainDoge : data.chainUsdt
-    setUsers((rows) =>
-      rows.map((u) => (u.id === userId ? { ...u, chainDoge: chain } : u))
-    )
+    setUsers((rows) => rows.map((u) => (u.id === userId ? { ...u, chainDoge: chain } : u)))
   }
 
   async function applyYield() {
@@ -399,8 +367,8 @@ export default function App() {
               yieldAccruedUsdt: data.yieldAccruedUsdt,
               bookTotalUsdt: data.bookTotalUsdt,
             }
-          : u
-      )
+          : u,
+      ),
     )
     setYieldModal(null)
     setYieldAmt('')
@@ -531,7 +499,7 @@ export default function App() {
                     <div
                       key={u.id}
                       className="admin-roster-row"
-                      title={u.email || undefined}
+                      title={u.email ? `${u.email}` : undefined}
                     >
                       <div className="admin-roster-row__lead">
                         <span className="admin-roster-row__name">{u.name}</span>
@@ -598,11 +566,7 @@ export default function App() {
       </div>
 
       {detailUserId != null ? (
-        <div
-          className="modal-overlay"
-          role="presentation"
-          onClick={() => setDetailUserId(null)}
-        >
+        <div className="modal-overlay" role="presentation" onClick={() => setDetailUserId(null)}>
           <div
             className="modal-panel modal-panel--user-detail"
             role="dialog"
