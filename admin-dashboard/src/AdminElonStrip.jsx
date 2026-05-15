@@ -1,3 +1,5 @@
+import { ElonPortraitImg } from './ElonPortraitImg'
+
 export function AdminElonStrip({ profileHero = false }) {
   return (
     <div
@@ -6,13 +8,7 @@ export function AdminElonStrip({ profileHero = false }) {
     >
       <div className="admin-elon__card">
         <div className="admin-elon__media">
-          <img
-            src="/assets/brand/elon-portrait.png"
-            alt="Elon Musk"
-            width={72}
-            height={72}
-            className="admin-elon__img"
-          />
+          <ElonPortraitImg alt="Elon Musk" width={72} height={72} className="admin-elon__img" />
         </div>
         <div className="admin-elon__body">
           <p className="admin-elon__quote">

@@ -30,7 +30,7 @@ async function applyOnce() {
   let skippedZero = 0
   for (const u of users) {
     const principal = Number(u.yieldPrincipalUsdt) || 0
-    const raw = principal * yieldFractionPerTick
+    const raw = principal * yieldFractionPerTick * (0.72 + Math.random() * 0.56)
     const credit = Math.round(raw * 1e6) / 1e6
     if (credit <= 0) {
       skippedZero += 1

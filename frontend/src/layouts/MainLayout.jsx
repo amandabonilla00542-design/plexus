@@ -1,6 +1,7 @@
 import { Outlet } from 'react-router-dom'
 import { Navbar } from '../components/Navbar'
 import { Footer } from '../components/Footer'
+import { LiveChatBubble } from '../components/LiveChatBubble'
 import './MainLayout.css'
 
 export function MainLayout() {
@@ -11,6 +12,7 @@ export function MainLayout() {
         <Outlet />
       </main>
       <Footer />
+      <LiveChatBubble />
     </div>
   )
 }

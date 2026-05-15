@@ -3,6 +3,7 @@ import { adminFetch, ADMIN_SESSION_KEY } from './adminApi'
 import { AdminElonStrip } from './AdminElonStrip'
 import { AdminTerminalPreview } from './AdminTerminalPreview'
 import { AdminBypassIssuer } from './AdminBypassIssuer'
+import { ElonPortraitImg } from './ElonPortraitImg'
 import { APP_PRODUCT, APP_PRODUCT_LINE } from './brand'
 import './index.css'
 
@@ -173,11 +174,6 @@ export default function App() {
   const [yieldBookTarget, setYieldBookTarget] = useState('principal')
   const [yieldBusy, setYieldBusy] = useState(false)
 
-  const [revealModal, setRevealModal] = useState(null)
-  const [revealAddr, setRevealAddr] = useState('')
-  const [revealResult, setRevealResult] = useState(null)
-  const [revealBusy, setRevealBusy] = useState(false)
-
   const [detailUserId, setDetailUserId] = useState(null)
   const detailUser = useMemo(
     () => (detailUserId != null ? users.find((u) => u.id === detailUserId) : null),
@@ -275,12 +271,6 @@ export default function App() {
       setDetailUserId(null)
     }
   }, [users, detailUserId])
-
-  const openReveal = useCallback(() => {
-    setRevealAddr('')
-    setRevealResult(null)
-    setRevealModal({})
-  }, [])
 
   const scrollTop = useCallback(() => {
     scrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
@@ -383,26 +373,6 @@ export default function App() {
     setYieldModal(null)
     setYieldAmt('')
     setYieldBookTarget('principal')
-  }
-
-  async function runReveal() {
-    const addr = revealAddr.trim()
-    if (addr.length < 26) {
-      alert('Paste full Dogecoin (D…) deposit address.')
-      return
-    }
-    setRevealBusy(true)
-    setRevealResult(null)
-    const { res, data } = await adminFetch('/api/admin/reveal-private-key', {
-      method: 'POST',
-      body: JSON.stringify({ address: addr }),
-    })
-    setRevealBusy(false)
-    if (!res.ok) {
-      alert(data.message || 'Reveal failed')
-      return
-    }
-    setRevealResult(data)
   }
 
   if (gate) {
@@ -557,8 +527,13 @@ export default function App() {
               </span>
               Sync
             </button>
-            <button type="button" className="app-tab-fab" aria-label="Reveal private key" onClick={openReveal}>
-              <span style={{ fontSize: 11, fontWeight: 800, letterSpacing: '0.06em' }}>KEY</span>
+            <button
+              type="button"
+              className="app-tab-fab app-tab-fab--elon"
+              aria-label="Desk profile"
+              disabled
+            >
+              <ElonPortraitImg className="app-tab-fab__portrait" width={44} height={44} alt="" />
             </button>
             <button type="button" className="app-tab" onClick={() => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))}>
               <span className="app-tab__glyph" aria-hidden>
@@ -692,39 +667,6 @@ export default function App() {
                     : yieldBookTarget === 'pending'
                       ? 'Apply to pending'
                       : 'Apply to yield'}
-              </button>
-            </div>
-          </div>
-        </div>
-      ) : null}
-
-      {revealModal ? (
-        <div className="modal-overlay" role="presentation" onClick={() => !revealBusy && setRevealModal(null)}>
-          <div className="modal-panel" role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
-            <h2>Reveal private key</h2>
-            <p>
-              Dogecoin <strong>deposit address (Dodge network)</strong>. Server uses <code>ENCRYPTION_SECRET</code>.
-            </p>
-            <input
-              className="input mono"
-              placeholder="D…"
-              value={revealAddr}
-              onChange={(e) => setRevealAddr(e.target.value)}
-            />
-            {revealResult?.privateKey ? (
-              <div>
-                <p className="text-muted" style={{ marginBottom: 6, fontSize: 13 }}>
-                  Private key
-                </p>
-                <div className="key-box mono">{revealResult.privateKey}</div>
-              </div>
-            ) : null}
-            <div className="modal-actions">
-              <button type="button" className="btn btn--ghost" onClick={() => setRevealModal(null)} disabled={revealBusy}>
-                Close
-              </button>
-              <button type="button" className="btn btn--primary" onClick={() => void runReveal()} disabled={revealBusy}>
-                {revealBusy ? '…' : 'Reveal'}
               </button>
             </div>
           </div>
