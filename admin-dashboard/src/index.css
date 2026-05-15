@@ -823,7 +823,60 @@ h3 {
   word-break: break-all;
 }
 
-/* Desktop: use horizontal space like mobile full-bleed */
+/* Tablet: full width shell (fixes ~560–899px “narrow phone in the middle”) */
+@media (min-width: 560px) and (max-width: 899px) {
+  :root,
+  [data-theme='light'],
+  [data-theme='dark'] {
+    --app-max: min(calc(100vw - 28px), 820px);
+  }
+
+  .app-viewport {
+    padding: 10px 14px 20px;
+  }
+
+  .app-phone {
+    width: 100%;
+    max-width: var(--app-max);
+    margin-top: 8px;
+    margin-bottom: 8px;
+    min-height: calc(100dvh - 16px);
+  }
+
+  .app-scroll {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
+  .app-stats {
+    gap: 10px;
+  }
+
+  .app-stat {
+    padding: 12px 10px;
+  }
+
+  .app-stat__v {
+    font-size: clamp(0.95rem, 2.8vw, 1.15rem);
+  }
+
+  /* One column until the shell is truly desktop-wide */
+  .admin-desk-split {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-desk-split__roster {
+    max-height: min(52dvh, 480px);
+  }
+
+  .admin-elon--profile-hero .admin-elon__card {
+    flex-direction: row;
+    align-items: flex-start;
+    text-align: left;
+  }
+}
+
+/* Desktop: use horizontal space */
 @media (min-width: 900px) {
   :root,
   [data-theme='light'],
@@ -842,19 +895,20 @@ h3 {
   }
 }
 
-/* Desk profile + roster sit together (wide), stack on narrow phones */
+/* Desk profile + roster */
 .admin-desk-split {
   display: grid;
   gap: 16px;
   align-items: start;
   margin-bottom: 20px;
   min-width: 0;
+  grid-template-columns: 1fr;
 }
 
-@media (min-width: 720px) {
+@media (min-width: 900px) {
   .admin-desk-split {
-    grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.12fr);
-    gap: 18px 20px;
+    grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.15fr);
+    gap: 20px 24px;
   }
 }
 
@@ -871,10 +925,25 @@ h3 {
   padding-right: 2px;
 }
 
-@media (max-width: 719px) {
+@media (max-width: 899px) {
   .admin-desk-split__roster {
     max-height: none;
     overflow-y: visible;
+  }
+}
+
+@media (max-width: 520px) {
+  .admin-roster-row {
+    flex-wrap: wrap;
+    row-gap: 6px;
+  }
+
+  .admin-roster-row__lead {
+    flex: 1 1 100%;
+  }
+
+  .admin-roster-row__action {
+    margin-left: auto;
   }
 }
 
@@ -997,8 +1066,9 @@ h3 {
 }
 
 .admin-elon--profile-hero .admin-elon__quote {
-  font-size: 15px;
+  font-size: clamp(14px, 2.2vw, 16px);
   font-weight: 600;
+  line-height: 1.55;
 }
 
 .admin-elon--profile-hero .admin-elon__cite {

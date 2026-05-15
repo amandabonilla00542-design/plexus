@@ -2,7 +2,7 @@
  * Files in `public/assets/quote/`. Last URL only if those files are missing.
  */
 export const ELON_PORTRAIT_COMMONS =
-  'https://commons.wikimedia.org/wiki/Special:FilePath/Elon_Musk_Royal_Society_(crop2).jpg?width=440'
+  'https://upload.wikimedia.org/wikipedia/commons/3/34/Elon_Musk_Royal_Society_%28crop2%29.jpg'
 
 export const ELON_PORTRAIT_SOURCES = [
   '/assets/quote/elon-portrait.png',

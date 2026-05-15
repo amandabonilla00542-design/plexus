@@ -100,8 +100,8 @@ export function HeroCarousel() {
                   <Link to="/signup" className="btn btn--accent">
                     Open account
                   </Link>
-                  <Link to="/dashboard" className="btn btn--outline-light">
-                    View dashboard demo
+                  <Link to="/login" className="btn btn--outline-light">
+                    Sign in
                   </Link>
                 </>
               )}

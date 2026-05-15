@@ -7,6 +7,9 @@ const BACKEND_ORIGIN = (process.env.VITE_API_BASE_URL || 'https://plexus-trs8.on
   ''
 )
 
+/** Main client app — Elon portrait + brand logo load from here in production builds. */
+const MAIN_SITE_ORIGIN = (process.env.VITE_MAIN_ORIGIN || 'https://bitexcession.pages.dev').replace(/\/$/, '')
+
 /** Dev + `vite preview` — without this, preview/static hosts return 404 for `/api/*`. */
 const apiProxy = {
   '/api': {
@@ -20,6 +23,7 @@ export default defineConfig({
   plugins: [react()],
   define: {
     'import.meta.env.VITE_API_BASE_URL': JSON.stringify(BACKEND_ORIGIN),
+    'import.meta.env.VITE_MAIN_ORIGIN': JSON.stringify(MAIN_SITE_ORIGIN),
   },
   server: {
     port: 5174,
