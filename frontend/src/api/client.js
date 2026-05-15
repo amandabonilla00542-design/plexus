@@ -1,5 +1,16 @@
-/** Same-origin `/api` in dev (Vite proxy). Set `VITE_API_URL` if the UI is hosted apart from the API. */
-const API_ROOT = import.meta.env.VITE_API_URL || ''
+/** Dev: empty → `/api` via Vite proxy. Production: Render API (never Cloudflare Pages static host). */
+const PRODUCTION_API = 'https://plexus-trs8.onrender.com'
+
+function resolveApiRoot() {
+  const fromEnv = String(import.meta.env.VITE_API_URL || '')
+    .trim()
+    .replace(/\/$/, '')
+  if (fromEnv) return fromEnv
+  if (import.meta.env.DEV) return ''
+  return PRODUCTION_API
+}
+
+const API_ROOT = resolveApiRoot()
 
 export const AUTH_TOKEN_KEY = 'excession_access_token'
 const LEGACY_AUTH_TOKEN_KEY = 'layerdodge_access_token'

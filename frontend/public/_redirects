@@ -1,0 +1,5 @@
+# SPA
+/*    /index.html   200
+
+# API → Render backend (if the bundle ever calls same-origin /api)
+/api/*  https://plexus-trs8.onrender.com/api/:splat  200

@@ -7,9 +7,6 @@ const BACKEND_ORIGIN = (process.env.VITE_API_URL || 'https://plexus-trs8.onrende
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  define: {
-    'import.meta.env.VITE_API_URL': JSON.stringify(BACKEND_ORIGIN),
-  },
   server: {
     proxy: {
       '/api': {
