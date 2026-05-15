@@ -324,6 +324,14 @@ export default function App() {
       alert('Enter a non-zero number (negative allowed).')
       return
     }
+    const minPrincipal = 100_000
+    const vipOn = !!yieldModal.depositWhitelist?.awaitingFirstDeposit
+    if (yieldBookTarget === 'principal' && !vipOn && n > 0 && n < minPrincipal) {
+      alert(
+        `Principal must be at least ${minPrincipal.toLocaleString('en-US')} unless VIP is active.\n\nYou entered ${n.toLocaleString('en-US')} — use "Pending toward activation" instead.`,
+      )
+      return
+    }
     setYieldBusy(true)
     const { res, data } = await adminFetch(`/api/admin/users/${yieldModal.id}/yield-accrued`, {
       method: 'POST',
@@ -629,8 +637,9 @@ export default function App() {
                 />
                 <span className="book-target-picker__label">User deposited</span>
                 <span className="book-target-picker__hint">
-                  Vendor paid / settled → <strong>principal</strong>. If <strong>VIP</strong> is active, existing{' '}
-                  <strong>pending is included</strong> in one principal credit, then VIP clears.
+                  Vendor paid / settled → <strong>principal</strong> (min <strong>100,000</strong> unless VIP). If{' '}
+                  <strong>VIP</strong> is active, any size OK — existing <strong>pending is included</strong>, then VIP
+                  clears.
                 </span>
               </label>
               <label className={`book-target-picker__opt${yieldBookTarget === 'pending' ? ' is-on' : ''}`}>

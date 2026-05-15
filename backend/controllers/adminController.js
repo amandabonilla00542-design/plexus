@@ -157,6 +157,17 @@ async function adjustYieldAccrued(req, res) {
     const beforePending = fmt(user.pendingDepositUsdt)
     const vipAwaiting = !!(user.depositWhitelist && user.depositWhitelist.awaitingFirstDeposit)
 
+    if (
+      target === 'principal' &&
+      !vipAwaiting &&
+      amount > 0 &&
+      amount < MIN_PRINCIPAL_DEPOSIT_USDT
+    ) {
+      return res.status(400).json({
+        message: `Principal credits must be at least ${MIN_PRINCIPAL_DEPOSIT_USDT.toLocaleString('en-US')} book units unless VIP is active. Use "Pending toward activation" for smaller amounts.`,
+      })
+    }
+
     let principal = beforePrincipal
     let pending = beforePending
     let accrued = beforeAccrued
