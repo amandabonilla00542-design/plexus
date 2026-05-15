@@ -618,6 +618,21 @@ export function Dashboard() {
 
  
 
+        <div className="deposit-scanner" role="status" aria-live="polite">
+          <div className="deposit-scanner__head">
+            <span className="deposit-scanner__badge">LIVE</span>
+            <span className="deposit-scanner__title">Deposit scanner</span>
+          </div>
+          <div className="deposit-scanner__track" aria-hidden>
+            <span className="deposit-scanner__beam" />
+          </div>
+          <p className="deposit-scanner__copy">
+            After you send <strong>DOGE</strong>, this desk scans for new on-chain transfers on a{' '}
+            <strong>~2 minute</strong> cycle. Most deposits are detected and credited to your book within{' '}
+            <strong>about 2 minutes</strong> once the network confirms.
+          </p>
+        </div>
+
         {/* Deposit Section with Copy Address and Minimum Notice */}
         <div className="deposit-premium">
           <div className="deposit-premium__header">

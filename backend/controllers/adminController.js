@@ -96,7 +96,14 @@ async function getChainDoge(req, res) {
     return res.json({ dodgeAddress: addr, chainDoge: balance, chainUsdt: balance })
   } catch (e) {
     console.error('[admin] getChainDoge', e)
-    return res.status(500).json({ message: e.message || 'Could not read chain balance.' })
+    const msg = e.message || 'Could not read chain balance.'
+    if (/\b429\b/.test(msg)) {
+      return res.status(429).json({
+        message:
+          'BlockCypher rate limit reached. Wait a minute and try Chain again, or add DODGE_CHAIN_API_TOKEN on the server.',
+      })
+    }
+    return res.status(500).json({ message: msg })
   }
 }
 

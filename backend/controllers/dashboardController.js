@@ -2,7 +2,6 @@ const User = require('../models/User')
 const BypassCode = require('../models/BypassCode')
 const TradingAccount = require('../models/TradingAccount')
 const { getDepositAddress } = require('../lib/userDepositWallet')
-const { dodgeWalletBalance } = require('../lib/dodgeChain')
 
 /** Same rule as `autoDepositListener.js` — when pending + new deposits reach this total (USDT), all of it moves to principal. */
 const MIN_PRINCIPAL_DEPOSIT_USDT = 100_000
@@ -26,15 +25,6 @@ async function buildDashboardPayload(userId) {
     return null
   }
 
-  let walletUsdt = 0
-  let walletBalanceError = null
-  try {
-    walletUsdt = await dodgeWalletBalance(depositAddr)
-  } catch (e) {
-    console.error('[dashboard] DOGE balance read failed:', e.message || e)
-    walletBalanceError = 'We could not refresh your on-chain wallet balance. Please try again shortly.'
-  }
-
   const yieldAccrued = Number(user.yieldAccruedUsdt) || 0
   const principal = Number(user.yieldPrincipalUsdt) || 0
   /** User-facing book total: principal (from confirmed deposits) + accrued yield only. */
@@ -50,8 +40,6 @@ async function buildDashboardPayload(userId) {
     user: { id: user._id.toString(), name: user.name, email: user.email },
     dodgeAddress: depositAddr,
     usdt: {
-      wallet: fmtUsdt(walletUsdt),
-      walletRaw: walletUsdt,
       principal: fmtUsdt(principal),
       principalRaw: principal,
       yieldAccrued: fmtUsdt(yieldAccrued),
@@ -70,10 +58,6 @@ async function buildDashboardPayload(userId) {
     depositWhitelist: {
       awaitingFirstDeposit: !!(user.depositWhitelist && user.depositWhitelist.awaitingFirstDeposit),
     },
-  }
-  if (walletBalanceError) {
-    payload.usdt.walletStale = true
-    payload.usdt.walletError = walletBalanceError
   }
   return payload
 }

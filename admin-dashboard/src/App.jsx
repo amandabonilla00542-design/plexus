@@ -150,7 +150,7 @@ function UserAdminPanel({ u, chainBusy, onRefreshChain, onYield, onRevealKey }) 
         <div className="admin-chain text-muted">
           Chain DOGE:{' '}
           <strong className="numeric" style={{ color: 'var(--text)' }}>
-            {u.chainDoge == null ? '—' : fmtDoge(u.chainDoge)}
+            {u.chainDoge == null ? '— (tap Chain)' : fmtDoge(u.chainDoge)}
           </strong>
         </div>
         <div className="admin-actions">

@@ -1028,6 +1028,110 @@
 }
 
 /* Deposit Premium Section */
+/* Live deposit scan indicator (matches ~120s server poll) */
+.deposit-scanner {
+  margin: 0 0 22px;
+  padding: 14px 16px 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid color-mix(in srgb, #22c55e 45%, var(--border));
+  background: linear-gradient(
+    165deg,
+    color-mix(in srgb, #22c55e 10%, var(--bg-elevated)),
+    var(--bg-elevated)
+  );
+  box-shadow: 0 0 24px color-mix(in srgb, #22c55e 12%, transparent);
+}
+
+.deposit-scanner__head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.deposit-scanner__badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: #052e16;
+  background: #4ade80;
+  box-shadow: 0 0 12px color-mix(in srgb, #4ade80 55%, transparent);
+  animation: depositScannerPulse 1.6s ease-in-out infinite;
+}
+
+.deposit-scanner__title {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #86efac;
+}
+
+.deposit-scanner__track {
+  position: relative;
+  height: 5px;
+  margin-bottom: 12px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: color-mix(in srgb, #22c55e 12%, var(--surface-muted));
+  border: 1px solid color-mix(in srgb, #22c55e 28%, var(--border));
+}
+
+.deposit-scanner__beam {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 32%;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    #4ade80 45%,
+    #bbf7d0 55%,
+    transparent 100%
+  );
+  box-shadow: 0 0 14px #4ade80;
+  animation: depositScannerSweep 2.2s ease-in-out infinite alternate;
+}
+
+.deposit-scanner__copy {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.55;
+  color: color-mix(in srgb, #bbf7d0 75%, var(--text-muted));
+}
+
+.deposit-scanner__copy strong {
+  color: #86efac;
+  font-weight: 800;
+}
+
+@keyframes depositScannerSweep {
+  from {
+    left: 0;
+    transform: translateX(0);
+  }
+  to {
+    left: 100%;
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes depositScannerPulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.72;
+  }
+}
+
 .deposit-premium {
   background: var(--surface);
   border: 1px solid var(--border);

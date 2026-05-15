@@ -13,7 +13,8 @@ const { getDepositAddress } = require('./lib/userDepositWallet')
 const { fetchIncomingDeposits, TUNABLES: CHAIN_TUNABLES } = require('./lib/dodgeChain')
 
 const TUNABLES = {
-  pollEveryMs: 30_000,
+  /** 120s ≈ 30 req/hr, 720/day — comfortable under BlockCypher free (100/hr, 1000/day). */
+  pollEveryMs: 120_000,
   minUsdtForPrincipal: 100_000,
   lookbackDays: 1,
   get lookbackMs() {
