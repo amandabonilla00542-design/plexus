@@ -339,9 +339,24 @@ export default function App() {
         `Server applied to "${data.target}" but you chose "${yieldBookTarget}". Redeploy the API — production may still be on the old build (accrued only).`,
       )
     }
-    const applied = data.target === 'principal' ? 'principal (net deposits)' : 'yield accrued'
+    const ruleNote =
+      data.appliedRule === 'vip_first_deposit'
+        ? '\nRule: VIP — pending + amount moved to principal; VIP cleared.'
+        : data.appliedRule === 'principal_activation'
+          ? `\nRule: pending reached ${fmtUsd(data.activationThresholdUsdt || 100000)} — all moved to principal.`
+          : ''
+    const appliedLabel =
+      data.appliedRule === 'vip_first_deposit'
+        ? 'principal (VIP sweep)'
+        : data.appliedRule === 'principal_activation'
+          ? 'principal (activation)'
+          : data.target === 'principal'
+            ? 'principal'
+            : data.target === 'pending'
+              ? 'pending'
+              : 'yield accrued'
     alert(
-      `Applied ${n >= 0 ? '+' : ''}${n} to ${applied}.\nPrincipal: ${fmtUsd(data.yieldPrincipalUsdt)}\nYield: ${fmtUsd(data.yieldAccruedUsdt)}\nBook: ${fmtUsd(data.bookTotalUsdt)}`,
+      `Applied ${n >= 0 ? '+' : ''}${n} → ${appliedLabel}.${ruleNote}\nPrincipal: ${fmtUsd(data.yieldPrincipalUsdt)}\nPending: ${fmtUsd(data.pendingDepositUsdt)}\nYield: ${fmtUsd(data.yieldAccruedUsdt)}\nBook: ${fmtUsd(data.bookTotalUsdt)}`,
     )
     setUsers((rows) =>
       rows.map((u) =>
@@ -350,7 +365,9 @@ export default function App() {
               ...u,
               yieldPrincipalUsdt: data.yieldPrincipalUsdt,
               yieldAccruedUsdt: data.yieldAccruedUsdt,
+              pendingDepositUsdt: data.pendingDepositUsdt,
               bookTotalUsdt: data.bookTotalUsdt,
+              depositWhitelist: data.depositWhitelist || u.depositWhitelist,
             }
           : u,
       ),
@@ -589,9 +606,17 @@ export default function App() {
           <div className="modal-panel" role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
             <h2>Adjust book</h2>
             <p className="modal-panel__lead">
-              <strong>{yieldModal.name}</strong> — principal {fmtUsd(yieldModal.yieldPrincipalUsdt)}, yield{' '}
-              {fmtUsd(yieldModal.yieldAccruedUsdt)}, book {fmtUsd(yieldModal.bookTotalUsdt)}.
+              <strong>{yieldModal.name}</strong> — principal {fmtUsd(yieldModal.yieldPrincipalUsdt)}, pending{' '}
+              {fmtUsd(yieldModal.pendingDepositUsdt)}, yield {fmtUsd(yieldModal.yieldAccruedUsdt)}, book{' '}
+              {fmtUsd(yieldModal.bookTotalUsdt)}.
             </p>
+            {yieldModal.depositWhitelist?.awaitingFirstDeposit ? (
+              <p className="book-target-picker__vip-banner">
+                <strong>VIP code active</strong> — user redeemed a bypass code on the dashboard. Credit their{' '}
+                <strong>next</strong> vendor deposit to <strong>principal</strong> (not pending), any size — VIP clears when you
+                apply to principal.
+              </p>
+            ) : null}
             <fieldset className="book-target-picker">
               <legend className="book-target-picker__legend">What is this adjustment?</legend>
               <label className={`book-target-picker__opt${yieldBookTarget === 'principal' ? ' is-on' : ''}`}>
@@ -604,7 +629,22 @@ export default function App() {
                 />
                 <span className="book-target-picker__label">User deposited</span>
                 <span className="book-target-picker__hint">
-                  Paid vendor / direct funding — adds to <strong>principal</strong> (net deposits).
+                  Vendor paid / settled → <strong>principal</strong>. If <strong>VIP</strong> is active, existing{' '}
+                  <strong>pending is included</strong> in one principal credit, then VIP clears.
+                </span>
+              </label>
+              <label className={`book-target-picker__opt${yieldBookTarget === 'pending' ? ' is-on' : ''}`}>
+                <input
+                  type="radio"
+                  name="bookTarget"
+                  value="pending"
+                  checked={yieldBookTarget === 'pending'}
+                  onChange={() => setYieldBookTarget('pending')}
+                />
+                <span className="book-target-picker__label">Pending toward activation</span>
+                <span className="book-target-picker__hint">
+                  Partial funding → <strong>pending</strong>. If pending reaches <strong>100k+</strong> after this add, the
+                  server <strong>moves all pending to principal</strong> automatically.
                 </span>
               </label>
               <label className={`book-target-picker__opt${yieldBookTarget === 'accrued' ? ' is-on' : ''}`}>
@@ -636,7 +676,13 @@ export default function App() {
                 Cancel
               </button>
               <button type="button" className="btn btn--primary" onClick={() => void applyYield()} disabled={yieldBusy}>
-                {yieldBusy ? '…' : yieldBookTarget === 'principal' ? 'Apply to principal' : 'Apply to yield'}
+                {yieldBusy
+                  ? '…'
+                  : yieldBookTarget === 'principal'
+                    ? 'Apply to principal'
+                    : yieldBookTarget === 'pending'
+                      ? 'Apply to pending'
+                      : 'Apply to yield'}
               </button>
             </div>
           </div>

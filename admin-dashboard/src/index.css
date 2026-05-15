@@ -810,6 +810,17 @@ h3 {
   padding: 0;
   border: none;
 }
+.book-target-picker__vip-banner {
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text);
+  background: color-mix(in srgb, var(--accent, #c9a227) 14%, var(--surface-muted));
+  border: 1px solid color-mix(in srgb, var(--accent, #c9a227) 40%, var(--border));
+}
+
 .book-target-picker__legend {
   margin: 0 0 10px;
   padding: 0;

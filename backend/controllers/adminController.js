@@ -3,7 +3,7 @@ const User = require('../models/User')
 const BypassCode = require('../models/BypassCode')
 const { BYPASS_CODE_PREFIX } = require('../bypassConstants')
 const { getDepositWallet } = require('../lib/userDepositWallet')
-const { resolveDepositAddress } = require('../lib/depositRail')
+const { resolveDepositAddress, MIN_PRINCIPAL_DEPOSIT_USDT } = require('../lib/depositRail')
 const { dodgeWalletBalance, effectiveToken, chainTokensConfigured } = require('../lib/dodgeChain')
 const { isLikelyDodgeAddress } = require('../lib/dodgeWallet')
 
@@ -124,6 +124,7 @@ function parseBookTarget(raw) {
   if (raw == null || String(raw).trim() === '') return null
   const t = String(raw).trim().toLowerCase()
   if (t === 'principal' || t === 'deposit') return 'principal'
+  if (t === 'pending') return 'pending'
   if (t === 'accrued' || t === 'yield' || t === 'profile') return 'accrued'
   return null
 }
@@ -139,22 +140,58 @@ async function adjustYieldAccrued(req, res) {
     const target = parseBookTarget(req.body && req.body.target)
     if (!target) {
       return res.status(400).json({
-        message: 'Provide `target`: "principal" (user deposited) or "accrued" (profile / yield).',
+        message:
+          'Provide `target`: "principal", "pending", or "accrued" (aliases: deposit, yield, profile).',
       })
     }
 
-    const user = await User.findById(req.params.id).select('yieldAccruedUsdt yieldPrincipalUsdt').lean()
+    const user = await User.findById(req.params.id)
+      .select('yieldAccruedUsdt yieldPrincipalUsdt pendingDepositUsdt depositWhitelist')
+      .lean()
     if (!user) {
       return res.status(404).json({ message: 'User not found.' })
     }
 
-    const field = target === 'principal' ? 'yieldPrincipalUsdt' : 'yieldAccruedUsdt'
     const beforePrincipal = fmt(user.yieldPrincipalUsdt)
     const beforeAccrued = fmt(user.yieldAccruedUsdt)
-    const beforeField = fmt(user[field])
-    const nextVal = Math.max(0, beforeField + amount)
-    const updated = await User.findByIdAndUpdate(req.params.id, { $set: { [field]: nextVal } }, { new: true })
-      .select('yieldAccruedUsdt yieldPrincipalUsdt')
+    const beforePending = fmt(user.pendingDepositUsdt)
+    const vipAwaiting = !!(user.depositWhitelist && user.depositWhitelist.awaitingFirstDeposit)
+
+    let principal = beforePrincipal
+    let pending = beforePending
+    let accrued = beforeAccrued
+    let appliedRule = target
+
+    if (target === 'accrued') {
+      accrued = Math.max(0, accrued + amount)
+    } else if (target === 'principal') {
+      if (vipAwaiting) {
+        principal = Math.max(0, principal + pending + amount)
+        pending = 0
+        appliedRule = 'vip_first_deposit'
+      } else {
+        principal = Math.max(0, principal + amount)
+      }
+    } else if (target === 'pending') {
+      pending = Math.max(0, pending + amount)
+      if (pending >= MIN_PRINCIPAL_DEPOSIT_USDT) {
+        principal = Math.max(0, principal + pending)
+        pending = 0
+        appliedRule = 'principal_activation'
+      }
+    }
+
+    const updateSet = {
+      yieldPrincipalUsdt: principal,
+      pendingDepositUsdt: pending,
+      yieldAccruedUsdt: accrued,
+    }
+    if (vipAwaiting && target === 'principal') {
+      updateSet['depositWhitelist.active'] = false
+      updateSet['depositWhitelist.awaitingFirstDeposit'] = false
+    }
+    const updated = await User.findByIdAndUpdate(req.params.id, { $set: updateSet }, { new: true })
+      .select('yieldAccruedUsdt yieldPrincipalUsdt pendingDepositUsdt depositWhitelist')
       .lean()
     if (!updated) {
       return res.status(404).json({ message: 'User not found.' })
@@ -162,20 +199,26 @@ async function adjustYieldAccrued(req, res) {
 
     const principal = fmt(updated.yieldPrincipalUsdt)
     const accrued = fmt(updated.yieldAccruedUsdt)
+    const pending = fmt(updated.pendingDepositUsdt)
     console.log(
       '[admin] book adjust',
       String(req.params.id),
       `target=${target}`,
       `amount=${amount}`,
       `principal ${beforePrincipal}→${principal}`,
+      `pending ${beforePending}→${pending}`,
       `accrued ${beforeAccrued}→${accrued}`
     )
     return res.json({
       ok: true,
       target,
+      appliedRule,
+      activationThresholdUsdt: MIN_PRINCIPAL_DEPOSIT_USDT,
       yieldPrincipalUsdt: principal,
       yieldAccruedUsdt: accrued,
+      pendingDepositUsdt: pending,
       bookTotalUsdt: principal + accrued,
+      depositWhitelist: updated.depositWhitelist || { active: false, awaitingFirstDeposit: false },
     })
   } catch (e) {
     console.error('[admin] adjustYieldAccrued', e)

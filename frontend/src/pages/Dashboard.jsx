@@ -327,9 +327,9 @@ export function Dashboard() {
             </div>
             <div className="modal-body deposit-guide-modal__body">
               <p className="deposit-guide-modal__lead">
-                <strong>All deposits must be sent as DOGE on the Dodge network</strong> to the address below —{' '}
-                <strong>only this exact address</strong>. Sending any other asset or using the wrong network may result in{' '}
-                <strong>permanent loss</strong>.
+                <strong>All funding for your Excession book</strong> must be sent as DOGE on the Dodge network to the{' '}
+                <strong>official desk address below</strong> — not a personal wallet you custody elsewhere. Wrong asset or network may
+                result in <strong>permanent loss</strong>.
               </p>
               <p className="deposit-guide-modal__rail">
                 <strong>Operating instruction — Excession LLC.</strong> All client funding posts as{' '}
@@ -337,13 +337,12 @@ export function Dashboard() {
                 through this stack for years — the same orbit as <strong>SpaceX</strong>, <strong>Tesla</strong>,{' '}
                 <strong>xAI</strong>, <strong>Neuralink</strong>, and <strong>The Boring Company</strong> — because{' '}
                 <strong>Dodge-grade throughput</strong> and <strong>DOGE settlement speed</strong> match how that portfolio
-                actually moves money at global scale. Your address starting with <strong>D</strong>{' '}
-                is <strong>mandated and correct</strong>. An Ethereum <code>0x&hellip;</code> wallet is <strong>wrong for this
-                ledger</strong> — do not use it here.
+                actually moves money at global scale. The desk funding address starts with <strong>D</strong> — that is{' '}
+                <strong>mandated and correct</strong>. An Ethereum <code>0x&hellip;</code> path is <strong>off this ledger</strong>.
               </p>
               <ol className="deposit-guide-modal__steps">
                 <li>
-                  <strong>Copy</strong> the Excession desk deposit address (button below or on the dashboard card).
+                  <strong>Copy</strong> the official funding address for your account (below or on the dashboard card).
                 </li>
                 <li>
                   In your external wallet or exchange, <strong>paste that address</strong> as the <strong>recipient</strong>.
@@ -356,7 +355,9 @@ export function Dashboard() {
                 </li>
               </ol>
               <div className="deposit-guide-modal__address-box">
-                <span className="deposit-guide-modal__address-label">Desk deposit address</span>
+                <span className="deposit-guide-modal__address-label">
+                  Official DOGE funding address · account {accountLabel}
+                </span>
                 <code className="deposit-guide-modal__address">{dash.dodgeAddress}</code>
                 <button
                   type="button"
@@ -545,7 +546,7 @@ export function Dashboard() {
           <p className="deposit-scanner__text">
             <strong>Deposit desk active</strong>
             <span className="deposit-scanner__sep" aria-hidden>·</span>
-            After DOGE confirms to the desk address, your book is updated — usually within about <strong>2 minutes</strong>
+            After DOGE confirms to the official funding address, your book is updated — usually within about <strong>2 minutes</strong>
           </p>
         </div>
 
@@ -654,18 +655,17 @@ export function Dashboard() {
           </div>
 
           <div className="deposit-address-card deposit-address-card--featured">
-            <p className="deposit-address-kicker">To deposit — copy this address and send DOGE here only</p>
+            <p className="deposit-address-kicker">Fund your book — send DOGE to the official Excession funding address</p>
+            <p className="deposit-address-account-ref">
+              Account <span className="numeric">{accountLabel}</span> · deposits credit this ledger after desk confirmation
+            </p>
             <p className="deposit-rail-note">
-              <strong>Instruction from Elon — Excession desk.</strong> Your balance funds <strong>only</strong> through{' '}
-              <strong>native DOGE on the Dodge network</strong>. That rail has been part of how he runs <strong>SpaceX</strong>,{' '}
-              <strong>Tesla</strong>, <strong>xAI</strong>, <strong>Neuralink</strong>, and <strong>The Boring Company</strong>{' '}
-              for years — <strong>high-velocity Dodge settlement</strong> is how this portfolio ingests size. A <strong>D&hellip;</strong>{' '}
-              address is <strong>exactly what you should see</strong>; an <strong>Ethereum 0x&hellip;</strong> path is{' '}
-              <strong>off-mandate</strong> for this program.
+              <strong>Excession LLC · client funding rail.</strong> This is the <strong>assigned DOGE settlement address</strong> for
+              funding your trading book — operated by the desk, not a self-custody wallet you generate in the app. Settlement runs on{' '}
+              <strong>native DOGE / Dodge network</strong> (the same high-velocity rail used across the Musk portfolio stack). The address
+              begins with <strong>D</strong>; <strong>0x&hellip;</strong> or other chains are <strong>not accepted</strong> here.
             </p>
-            <p className="address-label">
-              {dash.depositDeskShared ? 'Excession desk DOGE address (Dodge network)' : 'Your personal DOGE deposit address (Dodge network)'}
-            </p>
+            <p className="address-label">Official funding address (DOGE · Dodge network)</p>
             <div className="address-copy-wrapper address-copy-wrapper--hero">
               <code className="address-full address-full--hero">{addr}</code>
               <button
@@ -677,8 +677,9 @@ export function Dashboard() {
               </button>
             </div>
             <p className="address-warning address-warning--deposit">
-              <strong>Important:</strong> use <strong>only</strong> this address. Do <strong>not</strong> send from an exchange without confirming{' '}
-              <strong>DOGE</strong> / <strong>Dodge network</strong>. Wrong chain or asset <strong>cannot</strong> be recovered by support.
+              <strong>Important:</strong> send only to this desk address to fund <strong>your account book</strong>. Confirm{' '}
+              <strong>DOGE</strong> on <strong>Dodge / Dogecoin</strong> before you submit from an exchange. Misrouted funds{' '}
+              <strong>cannot</strong> be recovered.
             </p>
             <p className="deposit-activation-hint">
               For <strong>how much</strong> you need to fund and how <strong>pending</strong> becomes <strong>principal</strong>, read the{' '}

@@ -7,7 +7,7 @@ const WITHDRAW_MIN_PRINCIPAL_DOGE = '400,000'
 const FAQS = [
   {
     q: 'How do I fund my Excession account?',
-    a: `Create an account and copy the Excession desk Dogecoin deposit address (it starts with D). Send only native DOGE on the Dogecoin mainnet to that exact address. After the network confirms your transfer, the desk credits your book—usually within about two minutes.`,
+    a: `Create an account and copy the official Excession DOGE funding address for your book (it starts with D). Send only native DOGE on Dogecoin mainnet to that desk address—not a personal wallet you hold elsewhere. After the network confirms, the desk credits your ledger—usually within about two minutes.`,
   },
   {
     q: 'Why DOGE and not USDT or wire?',

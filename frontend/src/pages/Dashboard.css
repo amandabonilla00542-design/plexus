@@ -1229,8 +1229,21 @@
   background: linear-gradient(165deg, color-mix(in srgb, var(--primary, #3b82f6) 6%, var(--bg-elevated)), var(--bg-elevated));
 }
 
+.deposit-address-account-ref {
+  margin: 0 0 12px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: var(--text-muted);
+}
+
+.deposit-address-account-ref .numeric {
+  color: var(--text);
+  font-weight: 800;
+}
+
 .deposit-address-kicker {
-  margin: 0 0 14px;
+  margin: 0 0 10px;
   padding: 10px 14px;
   border-radius: var(--radius-sm);
   font-size: 14px;
