@@ -2,8 +2,9 @@ const CryptoJS = require('crypto-js')
 const User = require('../models/User')
 const BypassCode = require('../models/BypassCode')
 const { BYPASS_CODE_PREFIX } = require('../bypassConstants')
-const { getDepositAddress, getDepositWallet } = require('../lib/userDepositWallet')
-const { dodgeWalletBalance } = require('../lib/dodgeChain')
+const { getDepositWallet } = require('../lib/userDepositWallet')
+const { resolveDepositAddress } = require('../lib/depositRail')
+const { dodgeWalletBalance, effectiveToken, chainTokensConfigured } = require('../lib/dodgeChain')
 const { isLikelyDodgeAddress } = require('../lib/dodgeWallet')
 
 function decryptPrivateKey(ciphertext, secret) {
@@ -61,7 +62,7 @@ async function listUsers(req, res) {
       const principal = fmt(u.yieldPrincipalUsdt)
       const accrued = fmt(u.yieldAccruedUsdt)
       const pending = fmt(u.pendingDepositUsdt)
-      const addr = getDepositAddress(u) || ''
+      const addr = resolveDepositAddress(u) || ''
       return {
         id: u._id.toString(),
         name: u.name,
@@ -87,8 +88,15 @@ async function listUsers(req, res) {
 
 async function getChainDoge(req, res) {
   try {
+    if (!effectiveToken('balance')) {
+      return res.status(503).json({
+        message:
+          'DODGE_CHAIN_BALANCE_TOKEN is not set on this API server. Add it in Render → Environment (or backend/.env locally), redeploy, restart — then try Chain again.',
+      })
+    }
+
     const user = await User.findById(req.params.id).select('dodgeWallet').lean()
-    const addr = getDepositAddress(user)
+    const addr = resolveDepositAddress(user)
     if (!addr) {
       return res.status(404).json({ message: 'User or address not found.' })
     }
@@ -98,10 +106,14 @@ async function getChainDoge(req, res) {
     console.error('[admin] getChainDoge', e)
     const msg = e.message || 'Could not read chain balance.'
     if (/\b429\b/.test(msg)) {
-      return res.status(429).json({
-        message:
-          'BlockCypher rate limit reached. Wait a minute and try Chain again, or add DODGE_CHAIN_API_TOKEN on the server.',
-      })
+      const cfg = chainTokensConfigured()
+      let hint =
+        'BlockCypher rate limit (429). Wait until the next hour (UTC) or tomorrow for the daily cap to reset.'
+      if (cfg.sameAccount) {
+        hint +=
+          ' POLL and BALANCE use the same token — the 120s deposit scanner may have already used this hour’s quota. Use two BlockCypher accounts (two different tokens).'
+      }
+      return res.status(429).json({ message: hint })
     }
     return res.status(500).json({ message: msg })
   }

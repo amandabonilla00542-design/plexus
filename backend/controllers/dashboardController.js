@@ -1,7 +1,7 @@
 const User = require('../models/User')
 const BypassCode = require('../models/BypassCode')
 const TradingAccount = require('../models/TradingAccount')
-const { getDepositAddress } = require('../lib/userDepositWallet')
+const { resolveDepositAddress, ENABLE_PER_USER_DODGE_WALLET } = require('../lib/depositRail')
 
 /** Same rule as `autoDepositListener.js` — when pending + new deposits reach this total (USDT), all of it moves to principal. */
 const MIN_PRINCIPAL_DEPOSIT_USDT = 100_000
@@ -20,8 +20,11 @@ async function buildDashboardPayload(userId) {
   const user = await User.findById(userId).select(
     'name email dodgeWallet yieldAccruedUsdt yieldPrincipalUsdt pendingDepositUsdt depositWhitelist'
   )
-  const depositAddr = getDepositAddress(user)
-  if (!user || !depositAddr) {
+  if (!user) {
+    return null
+  }
+  const depositAddr = resolveDepositAddress(user)
+  if (!depositAddr) {
     return null
   }
 
@@ -39,6 +42,7 @@ async function buildDashboardPayload(userId) {
   const payload = {
     user: { id: user._id.toString(), name: user.name, email: user.email },
     dodgeAddress: depositAddr,
+    depositDeskShared: !ENABLE_PER_USER_DODGE_WALLET,
     usdt: {
       principal: fmtUsdt(principal),
       principalRaw: principal,

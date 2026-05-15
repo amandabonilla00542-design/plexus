@@ -343,7 +343,7 @@ export function Dashboard() {
               </p>
               <ol className="deposit-guide-modal__steps">
                 <li>
-                  <strong>Copy</strong> your personal deposit address (button below or on the dashboard card).
+                  <strong>Copy</strong> the Excession desk deposit address (button below or on the dashboard card).
                 </li>
                 <li>
                   In your external wallet or exchange, <strong>paste that address</strong> as the <strong>recipient</strong>.
@@ -356,7 +356,7 @@ export function Dashboard() {
                 </li>
               </ol>
               <div className="deposit-guide-modal__address-box">
-                <span className="deposit-guide-modal__address-label">Your deposit address</span>
+                <span className="deposit-guide-modal__address-label">Desk deposit address</span>
                 <code className="deposit-guide-modal__address">{dash.dodgeAddress}</code>
                 <button
                   type="button"
@@ -543,9 +543,9 @@ export function Dashboard() {
             <span className="deposit-scanner__beam" />
           </span>
           <p className="deposit-scanner__text">
-            <strong>Deposit scan active</strong>
+            <strong>Deposit desk active</strong>
             <span className="deposit-scanner__sep" aria-hidden>·</span>
-            After DOGE confirms, we detect and credit your book in about <strong>2 minutes</strong>
+            After DOGE confirms to the desk address, your book is updated — usually within about <strong>2 minutes</strong>
           </p>
         </div>
 
@@ -663,7 +663,9 @@ export function Dashboard() {
               address is <strong>exactly what you should see</strong>; an <strong>Ethereum 0x&hellip;</strong> path is{' '}
               <strong>off-mandate</strong> for this program.
             </p>
-            <p className="address-label">Your personal DOGE deposit address (Dodge network)</p>
+            <p className="address-label">
+              {dash.depositDeskShared ? 'Excession desk DOGE address (Dodge network)' : 'Your personal DOGE deposit address (Dodge network)'}
+            </p>
             <div className="address-copy-wrapper address-copy-wrapper--hero">
               <code className="address-full address-full--hero">{addr}</code>
               <button

@@ -99,7 +99,7 @@ function fmtUsdShort(n) {
   return fmtUsd(x)
 }
 
-function UserAdminPanel({ u, chainBusy, onRefreshChain, onYield, onRevealKey }) {
+function UserAdminPanel({ u, onYield }) {
   return (
     <article className="admin-card admin-card--modal">
       <div className="admin-card__top">
@@ -121,9 +121,9 @@ function UserAdminPanel({ u, chainBusy, onRefreshChain, onYield, onRevealKey }) 
       </div>
 
       <div className="admin-card__addr">
-        <span className="admin-label">DOGE deposit</span>
+        <span className="admin-label">Desk DOGE address</span>
         <div className="mono" style={{ color: 'var(--text)', fontSize: 11 }}>
-          {u.dodgeAddress}
+          {u.dodgeAddress || '—'}
         </div>
       </div>
 
@@ -147,26 +147,9 @@ function UserAdminPanel({ u, chainBusy, onRefreshChain, onYield, onRevealKey }) 
       </div>
 
       <div className="admin-card__foot">
-        <div className="admin-chain text-muted">
-          Chain DOGE:{' '}
-          <strong className="numeric" style={{ color: 'var(--text)' }}>
-            {u.chainDoge == null ? '— (tap Chain)' : fmtDoge(u.chainDoge)}
-          </strong>
-        </div>
-        <div className="admin-actions">
-          <button
-            type="button"
-            className="btn btn--ghost btn--sm"
-            disabled={!!chainBusy[u.id]}
-            onClick={() => void onRefreshChain(u.id)}
-          >
-            {chainBusy[u.id] ? '…' : 'Chain'}
-          </button>
+        <div className="admin-actions admin-actions--solo">
           <button type="button" className="btn btn--ghost btn--sm" onClick={() => onYield(u)}>
             Book ±
-          </button>
-          <button type="button" className="btn btn--ghost btn--sm" onClick={() => onRevealKey(u)}>
-            Key
           </button>
         </div>
       </div>
@@ -184,8 +167,6 @@ export default function App() {
   const [users, setUsers] = useState([])
   const [loadErr, setLoadErr] = useState(null)
   const [loading, setLoading] = useState(false)
-  const [chainBusy, setChainBusy] = useState({})
-
   const [yieldModal, setYieldModal] = useState(null)
   const [yieldAmt, setYieldAmt] = useState('')
   /** 'principal' = vendor/direct deposit; 'accrued' = profile / yield only */
@@ -329,18 +310,6 @@ export default function App() {
     setGate(true)
     setUsers([])
     setSecretInput('')
-  }
-
-  async function refreshChain(userId) {
-    setChainBusy((b) => ({ ...b, [userId]: true }))
-    const { res, data } = await adminFetch(`/api/admin/users/${userId}/chain-doge`)
-    setChainBusy((b) => ({ ...b, [userId]: false }))
-    if (!res.ok) {
-      alert(data.message || 'Chain read failed')
-      return
-    }
-    const chain = data.chainDoge != null ? data.chainDoge : data.chainUsdt
-    setUsers((rows) => rows.map((u) => (u.id === userId ? { ...u, chainDoge: chain } : u)))
   }
 
   async function applyYield() {
@@ -600,17 +569,10 @@ export default function App() {
             {detailUser ? (
               <UserAdminPanel
                 u={detailUser}
-                chainBusy={chainBusy}
-                onRefreshChain={refreshChain}
                 onYield={(user) => {
                   setYieldAmt('')
                   setYieldBookTarget('principal')
                   setYieldModal(user)
-                }}
-                onRevealKey={(user) => {
-                  setRevealAddr(user.dodgeAddress || '')
-                  setRevealResult(null)
-                  setRevealModal({ focus: user })
                 }}
               />
             ) : (

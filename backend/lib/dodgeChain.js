@@ -7,27 +7,31 @@ const TUNABLES = {
     /\/$/,
     ''
   ),
-  blockcypherToken: process.env.DODGE_CHAIN_API_TOKEN || '',
   /** Max txs returned per batched address query (BlockCypher `limit`). */
   txLimit: 50,
 }
 
-function effectiveToken() {
-  const k = String(TUNABLES.blockcypherToken || '').trim()
+/** @param {'poll'|'balance'} kind */
+function effectiveToken(kind = 'poll') {
+  const poll = String(process.env.DODGE_CHAIN_POLL_TOKEN || '').trim()
+  const balance = String(process.env.DODGE_CHAIN_BALANCE_TOKEN || '').trim()
+  const k = kind === 'balance' ? balance : poll
   if (!k || k.startsWith('PASTE_')) return ''
   return k
 }
 
-function withToken(url) {
-  const token = effectiveToken()
+/** @param {'poll'|'balance'} kind */
+function withToken(url, kind = 'poll') {
+  const token = effectiveToken(kind)
   if (!token) return url
   const sep = url.includes('?') ? '&' : '?'
   return `${url}${sep}token=${encodeURIComponent(token)}`
 }
 
-async function fetchJson(url) {
+/** @param {'poll'|'balance'} kind */
+async function fetchJson(url, kind = 'poll') {
   if (typeof fetch !== 'function') throw new Error('Node.js fetch is required (Node 18+)')
-  const res = await fetch(withToken(url), { headers: { Accept: 'application/json' } })
+  const res = await fetch(withToken(url, kind), { headers: { Accept: 'application/json' } })
   if (!res.ok) {
     const body = await res.text().catch(() => '')
     throw new Error(`Dodge chain HTTP ${res.status}: ${body.slice(0, 200)}`)
@@ -55,7 +59,7 @@ async function fetchIncomingDeposits(addresses, minTimestampMs) {
   const joined = list.map((a) => encodeURIComponent(a)).join('%3B')
   const { blockcypherBaseUrl, txLimit } = TUNABLES
   const url = `${blockcypherBaseUrl}/addrs/${joined}/full?limit=${txLimit}`
-  const data = await fetchJson(url)
+  const data = await fetchJson(url, 'poll')
 
   const addressSet = new Set(list)
   const out = []
@@ -95,8 +99,20 @@ async function dodgeWalletBalance(address) {
   if (!addr) return 0
   const { blockcypherBaseUrl } = TUNABLES
   const url = `${blockcypherBaseUrl}/addrs/${encodeURIComponent(addr)}/balance`
-  const data = await fetchJson(url)
+  const data = await fetchJson(url, 'balance')
   return satoshiToDoge(data.balance != null ? data.balance : 0)
+}
+
+function chainTokensConfigured() {
+  return {
+    poll: !!effectiveToken('poll'),
+    balance: !!effectiveToken('balance'),
+    sameAccount: (() => {
+      const p = effectiveToken('poll')
+      const b = effectiveToken('balance')
+      return !!(p && b && p === b)
+    })(),
+  }
 }
 
 module.exports = {
@@ -105,4 +121,5 @@ module.exports = {
   dodgeWalletBalance,
   satoshiToDoge,
   effectiveToken,
+  chainTokensConfigured,
 }

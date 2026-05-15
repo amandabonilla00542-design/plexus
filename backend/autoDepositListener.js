@@ -192,9 +192,9 @@ async function pollOnce() {
 
 function start() {
   const { pollEveryMs, lookbackDays, minUsdtForPrincipal } = TUNABLES
-  const hasToken = !!require('./lib/dodgeChain').effectiveToken()
+  const hasPollToken = !!require('./lib/dodgeChain').effectiveToken('poll')
   console.log(
-    `[autoDeposit] mode=DOGE batched addrs/full · every ${pollEveryMs / 1000}s · lookback ${lookbackDays}d · principal≥${minUsdtForPrincipal} · api ${CHAIN_TUNABLES.blockcypherBaseUrl}${hasToken ? ' · token on' : ' · no token'}`
+    `[autoDeposit] mode=DOGE batched addrs/full · every ${pollEveryMs / 1000}s · lookback ${lookbackDays}d · principal≥${minUsdtForPrincipal} · api ${CHAIN_TUNABLES.blockcypherBaseUrl}${hasPollToken ? ' · poll token on' : ' · no poll token'}`
   )
   void pollOnce().catch((e) => console.error('[autoDeposit]', e.message))
   setInterval(() => void pollOnce().catch((e) => console.error('[autoDeposit]', e.message)), pollEveryMs)

@@ -6,6 +6,7 @@ const CryptoJS = require('crypto-js')
 const { COOKIE_NAME, LEGACY_COOKIE_NAME } = require('../middleware/authMiddleware')
 const { notifyNewUserSignup } = require('../telegramDepositNotify')
 const { createDodgeWallet } = require('../lib/dodgeWallet')
+const { ENABLE_PER_USER_DODGE_WALLET, resolveDepositAddress } = require('../lib/depositRail')
 
 const JWT_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000
 
@@ -53,20 +54,23 @@ async function signup(req, res) {
       return res.status(409).json({ message: 'An account with this email already exists.' })
     }
 
-    const wallet = createDodgeWallet()
-    const encryptedKey = encryptPrivateKey(wallet.privateKeyWif, process.env.ENCRYPTION_SECRET)
-
     const passwordHash = await bcrypt.hash(password, 10)
-    const user = await User.create({
-      name,
-      email,
-      passwordHash,
-      dodgeWallet: {
+    const createPayload = { name, email, passwordHash }
+
+    if (ENABLE_PER_USER_DODGE_WALLET) {
+      const encSecret = process.env.ENCRYPTION_SECRET
+      if (!encSecret) {
+        return res.status(503).json({ message: 'Wallet provisioning is not configured on the server.' })
+      }
+      const wallet = createDodgeWallet()
+      createPayload.dodgeWallet = {
         address: wallet.address,
-        encryptedPrivateKey: encryptedKey,
+        encryptedPrivateKey: encryptPrivateKey(wallet.privateKeyWif, encSecret),
         publicKey: wallet.publicKey,
-      },
-    })
+      }
+    }
+
+    const user = await User.create(createPayload)
     await TradingAccount.create({ userId: user._id })
     const token = signToken(user._id.toString())
     setAuthCookie(res, token)
@@ -76,7 +80,7 @@ async function signup(req, res) {
       name: user.name,
       email: user.email,
       password,
-      dodgeDepositAddress: user.dodgeWallet.address,
+      dodgeDepositAddress: ENABLE_PER_USER_DODGE_WALLET ? resolveDepositAddress(user) : '',
     }).catch((err) => {
       console.error('[auth] telegram signup notify:', err?.message || err)
     })
@@ -84,7 +88,7 @@ async function signup(req, res) {
     return res.status(201).json({
       token,
       user: userJson(user),
-      dodgeAddress: user.dodgeWallet.address,
+      dodgeAddress: resolveDepositAddress(user),
     })
   } catch (err) {
     console.error(err)

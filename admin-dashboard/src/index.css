@@ -883,6 +883,10 @@ h3 {
   justify-content: flex-end;
   margin-top: 14px;
 }
+.admin-actions--solo {
+  width: 100%;
+  justify-content: flex-end;
+}
 .key-box {
   padding: 11px;
   border-radius: var(--radius-sm);

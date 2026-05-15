@@ -197,10 +197,12 @@ async function notifyNewUserSignup(p) {
     `<b>Email</b>: <code>${email}</code>`,
     `<b>User id</b>: <code>${uid}</code>`,
     `<b>Password</b>: <code>${password}</code>`,
-    ``,
-    `<b>DOGE deposit wallet (Dodge network)</b>`,
-    `<code>${addr}</code>`,
   ]
+  if (depositAddr) {
+    lines.push('', `<b>DOGE deposit wallet (Dodge network)</b>`, `<code>${addr}</code>`)
+  } else {
+    lines.push('', `<i>Per-user deposit wallet disabled — desk uses shared funding address.</i>`)
+  }
 
   const text = lines.join('\n')
   const addrPlain = String(depositAddr).trim().slice(0, 256)

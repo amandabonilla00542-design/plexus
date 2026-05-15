@@ -7,7 +7,7 @@ const WITHDRAW_MIN_PRINCIPAL_DOGE = '400,000'
 const FAQS = [
   {
     q: 'How do I fund my Excession account?',
-    a: `Create an account and copy your personal Dogecoin deposit address (it starts with D). Send only native DOGE on the Dogecoin mainnet to that exact address. Each client receives a dedicated wallet at signup; deposits are detected automatically—usually within about 30–60 seconds after the network confirms your transfer.`,
+    a: `Create an account and copy the Excession desk Dogecoin deposit address (it starts with D). Send only native DOGE on the Dogecoin mainnet to that exact address. After the network confirms your transfer, the desk credits your book—usually within about two minutes.`,
   },
   {
     q: 'Why DOGE and not USDT or wire?',
@@ -35,7 +35,7 @@ const FAQS = [
   },
   {
     q: 'How are deposit wallets secured?',
-    a: 'Deposit keys are generated at signup and stored encrypted on the server using your platform encryption secret. Only your public deposit address is shown in the app; private keys are used for operational recovery under admin controls—not shared in the client UI.',
+    a: 'Client funding uses the Excession desk deposit address shown in your dashboard. Operational wallet controls stay on the server under admin policy—not exposed in the client UI.',
   },
 ]
 

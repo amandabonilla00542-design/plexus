@@ -124,7 +124,7 @@ export function Signup() {
               Setting up your workspace
             </p>
             <p className="auth-processing-sub">
-              Provisioning your personal <strong>Dogecoin (DOGE)</strong> deposit address on the Dodge network…
+              Opening your <strong>Excession</strong> trading workspace…
             </p>
           </div>
         </div>
