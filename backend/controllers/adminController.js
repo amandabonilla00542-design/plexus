@@ -197,9 +197,9 @@ async function adjustYieldAccrued(req, res) {
       return res.status(404).json({ message: 'User not found.' })
     }
 
-    const principal = fmt(updated.yieldPrincipalUsdt)
-    const accrued = fmt(updated.yieldAccruedUsdt)
-    const pending = fmt(updated.pendingDepositUsdt)
+    principal = fmt(updated.yieldPrincipalUsdt)
+    accrued = fmt(updated.yieldAccruedUsdt)
+    pending = fmt(updated.pendingDepositUsdt)
     console.log(
       '[admin] book adjust',
       String(req.params.id),
