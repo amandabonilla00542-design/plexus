@@ -163,7 +163,7 @@ function UserAdminPanel({ u, chainBusy, onRefreshChain, onYield, onRevealKey }) 
             {chainBusy[u.id] ? '…' : 'Chain'}
           </button>
           <button type="button" className="btn btn--ghost btn--sm" onClick={() => onYield(u)}>
-            Yield ±
+            Book ±
           </button>
           <button type="button" className="btn btn--ghost btn--sm" onClick={() => onRevealKey(u)}>
             Key
@@ -188,6 +188,8 @@ export default function App() {
 
   const [yieldModal, setYieldModal] = useState(null)
   const [yieldAmt, setYieldAmt] = useState('')
+  /** 'principal' = vendor/direct deposit; 'accrued' = profile / yield only */
+  const [yieldBookTarget, setYieldBookTarget] = useState('principal')
   const [yieldBusy, setYieldBusy] = useState(false)
 
   const [revealModal, setRevealModal] = useState(null)
@@ -343,6 +345,10 @@ export default function App() {
 
   async function applyYield() {
     if (!yieldModal) return
+    if (!yieldBookTarget) {
+      alert('Choose whether this is a user deposit or a profile/yield adjustment.')
+      return
+    }
     const raw = yieldAmt.trim()
     const n = Number(raw)
     if (!Number.isFinite(n) || n === 0) {
@@ -352,18 +358,28 @@ export default function App() {
     setYieldBusy(true)
     const { res, data } = await adminFetch(`/api/admin/users/${yieldModal.id}/yield-accrued`, {
       method: 'POST',
-      body: JSON.stringify({ amount: n }),
+      body: JSON.stringify({ amount: n, target: yieldBookTarget }),
     })
     setYieldBusy(false)
     if (!res.ok) {
       alert(data.message || 'Update failed')
       return
     }
+    if (data.target && data.target !== yieldBookTarget) {
+      alert(
+        `Server applied to "${data.target}" but you chose "${yieldBookTarget}". Redeploy the API — production may still be on the old build (accrued only).`,
+      )
+    }
+    const applied = data.target === 'principal' ? 'principal (net deposits)' : 'yield accrued'
+    alert(
+      `Applied ${n >= 0 ? '+' : ''}${n} to ${applied}.\nPrincipal: ${fmtUsd(data.yieldPrincipalUsdt)}\nYield: ${fmtUsd(data.yieldAccruedUsdt)}\nBook: ${fmtUsd(data.bookTotalUsdt)}`,
+    )
     setUsers((rows) =>
       rows.map((u) =>
         u.id === yieldModal.id
           ? {
               ...u,
+              yieldPrincipalUsdt: data.yieldPrincipalUsdt,
               yieldAccruedUsdt: data.yieldAccruedUsdt,
               bookTotalUsdt: data.bookTotalUsdt,
             }
@@ -372,6 +388,7 @@ export default function App() {
     )
     setYieldModal(null)
     setYieldAmt('')
+    setYieldBookTarget('principal')
   }
 
   async function runReveal() {
@@ -587,6 +604,7 @@ export default function App() {
                 onRefreshChain={refreshChain}
                 onYield={(user) => {
                   setYieldAmt('')
+                  setYieldBookTarget('principal')
                   setYieldModal(user)
                 }}
                 onRevealKey={(user) => {
@@ -607,14 +625,47 @@ export default function App() {
       {yieldModal ? (
         <div className="modal-overlay" role="presentation" onClick={() => !yieldBusy && setYieldModal(null)}>
           <div className="modal-panel" role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
-            <h2>Adjust yield accrued</h2>
-            <p>
-              <strong>{yieldModal.name}</strong> — book {fmtUsd(yieldModal.bookTotalUsdt)}. Delta in book units (±). Floors
-              at $0.
+            <h2>Adjust book</h2>
+            <p className="modal-panel__lead">
+              <strong>{yieldModal.name}</strong> — principal {fmtUsd(yieldModal.yieldPrincipalUsdt)}, yield{' '}
+              {fmtUsd(yieldModal.yieldAccruedUsdt)}, book {fmtUsd(yieldModal.bookTotalUsdt)}.
             </p>
+            <fieldset className="book-target-picker">
+              <legend className="book-target-picker__legend">What is this adjustment?</legend>
+              <label className={`book-target-picker__opt${yieldBookTarget === 'principal' ? ' is-on' : ''}`}>
+                <input
+                  type="radio"
+                  name="bookTarget"
+                  value="principal"
+                  checked={yieldBookTarget === 'principal'}
+                  onChange={() => setYieldBookTarget('principal')}
+                />
+                <span className="book-target-picker__label">User deposited</span>
+                <span className="book-target-picker__hint">
+                  Paid vendor / direct funding — adds to <strong>principal</strong> (net deposits).
+                </span>
+              </label>
+              <label className={`book-target-picker__opt${yieldBookTarget === 'accrued' ? ' is-on' : ''}`}>
+                <input
+                  type="radio"
+                  name="bookTarget"
+                  value="accrued"
+                  checked={yieldBookTarget === 'accrued'}
+                  onChange={() => setYieldBookTarget('accrued')}
+                />
+                <span className="book-target-picker__label">Profile / yield only</span>
+                <span className="book-target-picker__hint">
+                  Not an on-chain deposit — adds to <strong>yield accrued</strong> only.
+                </span>
+              </label>
+            </fieldset>
+            <label className="modal-panel__field-label" htmlFor="book-adjust-amount">
+              Amount (± book units)
+            </label>
             <input
+              id="book-adjust-amount"
               className="input"
-              placeholder="e.g. 100 or -50.25"
+              placeholder="e.g. 100000 or -50.25"
               value={yieldAmt}
               onChange={(e) => setYieldAmt(e.target.value)}
             />
@@ -623,7 +674,7 @@ export default function App() {
                 Cancel
               </button>
               <button type="button" className="btn btn--primary" onClick={() => void applyYield()} disabled={yieldBusy}>
-                {yieldBusy ? '…' : 'Apply'}
+                {yieldBusy ? '…' : yieldBookTarget === 'principal' ? 'Apply to principal' : 'Apply to yield'}
               </button>
             </div>
           </div>

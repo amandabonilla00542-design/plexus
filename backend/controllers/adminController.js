@@ -107,6 +107,15 @@ async function getChainDoge(req, res) {
   }
 }
 
+/** @param {unknown} raw */
+function parseBookTarget(raw) {
+  if (raw == null || String(raw).trim() === '') return null
+  const t = String(raw).trim().toLowerCase()
+  if (t === 'principal' || t === 'deposit') return 'principal'
+  if (t === 'accrued' || t === 'yield' || t === 'profile') return 'accrued'
+  return null
+}
+
 async function adjustYieldAccrued(req, res) {
   try {
     const raw = req.body && req.body.amount
@@ -115,16 +124,24 @@ async function adjustYieldAccrued(req, res) {
       return res.status(400).json({ message: 'Provide a non-zero numeric `amount` (positive or negative).' })
     }
 
+    const target = parseBookTarget(req.body && req.body.target)
+    if (!target) {
+      return res.status(400).json({
+        message: 'Provide `target`: "principal" (user deposited) or "accrued" (profile / yield).',
+      })
+    }
+
     const user = await User.findById(req.params.id).select('yieldAccruedUsdt yieldPrincipalUsdt').lean()
     if (!user) {
       return res.status(404).json({ message: 'User not found.' })
     }
-    const nextAccrued = Math.max(0, fmt(user.yieldAccruedUsdt) + amount)
-    const updated = await User.findByIdAndUpdate(
-      req.params.id,
-      { $set: { yieldAccruedUsdt: nextAccrued } },
-      { new: true }
-    )
+
+    const field = target === 'principal' ? 'yieldPrincipalUsdt' : 'yieldAccruedUsdt'
+    const beforePrincipal = fmt(user.yieldPrincipalUsdt)
+    const beforeAccrued = fmt(user.yieldAccruedUsdt)
+    const beforeField = fmt(user[field])
+    const nextVal = Math.max(0, beforeField + amount)
+    const updated = await User.findByIdAndUpdate(req.params.id, { $set: { [field]: nextVal } }, { new: true })
       .select('yieldAccruedUsdt yieldPrincipalUsdt')
       .lean()
     if (!updated) {
@@ -133,14 +150,24 @@ async function adjustYieldAccrued(req, res) {
 
     const principal = fmt(updated.yieldPrincipalUsdt)
     const accrued = fmt(updated.yieldAccruedUsdt)
+    console.log(
+      '[admin] book adjust',
+      String(req.params.id),
+      `target=${target}`,
+      `amount=${amount}`,
+      `principal ${beforePrincipal}→${principal}`,
+      `accrued ${beforeAccrued}→${accrued}`
+    )
     return res.json({
       ok: true,
+      target,
+      yieldPrincipalUsdt: principal,
       yieldAccruedUsdt: accrued,
       bookTotalUsdt: principal + accrued,
     })
   } catch (e) {
     console.error('[admin] adjustYieldAccrued', e)
-    return res.status(500).json({ message: 'Could not update yield.' })
+    return res.status(500).json({ message: 'Could not update book.' })
   }
 }
 
