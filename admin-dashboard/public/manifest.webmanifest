@@ -1,17 +1,29 @@
 {
-  "name": "Meridian Treasury",
-  "short_name": "Meridian",
-  "description": "Private treasury & ledger operations",
+  "name": "Excession LLC · Admin",
+  "short_name": "Excession",
+  "description": "Excession LLC treasury & ledger operations",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0a0e14",
   "theme_color": "#0a0e14",
   "icons": [
     {
-      "src": "/assets/brand/excession-logo.png",
+      "src": "/assets/brand/pwa-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/brand/pwa-icon-maskable.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/assets/brand/pwa-icon.svg",
       "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "type": "image/svg+xml",
+      "purpose": "any"
     }
   ]
 }

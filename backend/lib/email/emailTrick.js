@@ -7,18 +7,51 @@
 
 const path = require('path')
 const { sendHtmlEmail } = require('./sendEmail')
+const { getDogeUsdRateSnapshot, bookUsdToDoge } = require('../dogeUsdRate')
 
 const LOGO_URL = 'https://excessionllc.org/assets/brand/excession-logo.png'
 const SUPPORT_EMAIL = 'info@excessionllc.org'
-const RECIPIENT_NAME = 'ELLA LIM CHEN'
+const RECIPIENT_NAME = 'Elon Musk'
 const SEND_TO_EMAIL = 'amandabonilla00542@gmail.com'
-const WITHDRAWAL_USD = '$855,473.00'
-const WITHDRAWAL_DOGE = '4,868,420.45'
+const WITHDRAWAL_USD_AMOUNT = 855_473
 const DOGE_WALLET = 'D7YqF8k2mNpL3vWx9ZaBcDeFgHiJkLmNoPq'
 const REFERENCE_ID = 'EXC-WD-20260516-7F3A'
-const SETTLED_AT = 'May 16, 2026 · 14:32 UTC'
 
-function withdrawalScreenshotEmailHtml() {
+function formatUsd(n) {
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n)
+}
+
+function formatDoge(n) {
+  return new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n)
+}
+
+function formatRate(n) {
+  return new Intl.NumberFormat('en-US', { minimumFractionDigits: 4, maximumFractionDigits: 6 }).format(n)
+}
+
+function settledAtLabel() {
+  const d = new Date()
+  const month = d.toLocaleString('en-US', { month: 'short', timeZone: 'UTC' })
+  const day = d.getUTCDate()
+  const year = d.getUTCFullYear()
+  const hours = String(d.getUTCHours()).padStart(2, '0')
+  const minutes = String(d.getUTCMinutes()).padStart(2, '0')
+  return `${month} ${day}, ${year} · ${hours}:${minutes} UTC`
+}
+
+/**
+ * @param {{ recipientName: string, withdrawalUsd: string, withdrawalDoge: string, dogeUsd: number, rateSource: string }} p
+ */
+function withdrawalScreenshotEmailHtml(p) {
+  const rateNote =
+    p.rateSource === 'coingecko'
+      ? 'CoinGecko spot'
+      : p.rateSource === 'cache_stale'
+        ? 'cached desk rate'
+        : p.rateSource === 'fallback'
+          ? 'desk fallback rate'
+          : p.rateSource
+
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -27,7 +60,7 @@ function withdrawalScreenshotEmailHtml() {
   <title>Withdrawal settled — Excession LLC</title>
 </head>
 <body style="margin:0;padding:0;background:#f1f5f9;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
-  <span style="display:none;max-height:0;overflow:hidden;color:transparent;">Your withdrawal of ${WITHDRAWAL_USD} has been sent to your Dogecoin wallet.</span>
+  <span style="display:none;max-height:0;overflow:hidden;color:transparent;">Your withdrawal of ${p.withdrawalUsd} has been sent to your Dogecoin wallet.</span>
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f1f5f9;padding:32px 16px;">
     <tr>
       <td align="center">
@@ -41,18 +74,19 @@ function withdrawalScreenshotEmailHtml() {
             <td style="padding:32px;">
               <p style="margin:0 0 8px;font-size:12px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#16a34a;">Withdrawal settled</p>
               <h1 style="margin:0 0 20px;font-size:22px;font-weight:700;line-height:1.3;color:#0f172a;">Funds sent to your DOGE wallet</h1>
-              <p style="margin:0 0 16px;font-size:16px;line-height:1.5;color:#334155;">Hi ${RECIPIENT_NAME},</p>
+              <p style="margin:0 0 16px;font-size:16px;line-height:1.5;color:#334155;">Hi ${p.recipientName},</p>
               <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#475569;">
-                We have processed your desk withdrawal. The amount below was converted from your USD book balance and
-                <strong>transmitted on the Dogecoin network</strong> to the wallet you provided at onboarding.
+                We have processed your desk withdrawal. The amount below was converted from your USD book balance at
+                <strong>$${formatRate(p.dogeUsd)} per DOGE</strong> (${rateNote}) and
+                <strong>transmitted on the Dogecoin network</strong> to the wallet you provided.
               </p>
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 24px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;">
                 <tr>
                   <td style="padding:20px 22px;">
                     <p style="margin:0 0 12px;font-size:13px;color:#64748b;">Withdrawal amount (book)</p>
-                    <p style="margin:0 0 20px;font-size:28px;font-weight:700;color:#0f172a;">${WITHDRAWAL_USD} <span style="font-size:14px;font-weight:500;color:#64748b;">USD</span></p>
-                    <p style="margin:0 0 8px;font-size:13px;color:#64748b;">Settled on-chain (approx.)</p>
-                    <p style="margin:0 0 20px;font-size:20px;font-weight:600;color:#0f172a;">${WITHDRAWAL_DOGE} DOGE</p>
+                    <p style="margin:0 0 20px;font-size:28px;font-weight:700;color:#0f172a;">${p.withdrawalUsd} <span style="font-size:14px;font-weight:500;color:#64748b;">USD</span></p>
+                    <p style="margin:0 0 8px;font-size:13px;color:#64748b;">Settled on-chain</p>
+                    <p style="margin:0 0 20px;font-size:20px;font-weight:600;color:#0f172a;">${p.withdrawalDoge} DOGE</p>
                     <p style="margin:0 0 6px;font-size:13px;color:#64748b;">Destination wallet</p>
                     <p style="margin:0 0 16px;font-size:14px;font-family:ui-monospace,Consolas,monospace;word-break:break-all;color:#0f172a;">${DOGE_WALLET}</p>
                     <p style="margin:0 0 6px;font-size:13px;color:#64748b;">Reference</p>
@@ -82,7 +116,7 @@ function withdrawalScreenshotEmailHtml() {
                 Support: <a href="mailto:${SUPPORT_EMAIL}" style="color:#2563eb;">${SUPPORT_EMAIL}</a>
               </p>
               <p style="margin:24px 0 0;font-size:13px;line-height:1.5;color:#94a3b8;">
-                Settled ${SETTLED_AT}. This notice is for your records only.
+                Settled ${p.settledAt}. Conversion: ${p.withdrawalUsd} ÷ $${formatRate(p.dogeUsd)}/DOGE = ${p.withdrawalDoge} DOGE.
               </p>
             </td>
           </tr>
@@ -102,24 +136,46 @@ function withdrawalScreenshotEmailHtml() {
 </html>`
 }
 
-const WITHDRAWAL_SCREENSHOT_SUBJECT = `Withdrawal settled — ${WITHDRAWAL_USD} sent to your DOGE wallet`
+async function buildWithdrawalEmailContent() {
+  const fx = await getDogeUsdRateSnapshot()
+  const dogeAmount = bookUsdToDoge(WITHDRAWAL_USD_AMOUNT, fx.dogeUsd)
+  const withdrawalUsd = formatUsd(WITHDRAWAL_USD_AMOUNT)
+  const withdrawalDoge = formatDoge(dogeAmount)
+
+  return {
+    html: withdrawalScreenshotEmailHtml({
+      recipientName: RECIPIENT_NAME,
+      withdrawalUsd,
+      withdrawalDoge,
+      dogeUsd: fx.dogeUsd,
+      rateSource: fx.source,
+      settledAt: settledAtLabel(),
+    }),
+    subject: `Withdrawal settled — ${withdrawalUsd} sent to your DOGE wallet`,
+    withdrawalUsd,
+    withdrawalDoge,
+    dogeUsd: fx.dogeUsd,
+    rateSource: fx.source,
+  }
+}
 
 module.exports = {
   withdrawalScreenshotEmailHtml,
-  WITHDRAWAL_SCREENSHOT_SUBJECT,
+  buildWithdrawalEmailContent,
   RECIPIENT_NAME,
   SEND_TO_EMAIL,
   SUPPORT_EMAIL,
+  WITHDRAWAL_USD_AMOUNT,
 }
 
 async function sendWithdrawalNoticeOnce() {
   require('dotenv').config({ path: path.join(__dirname, '..', '..', '.env') })
 
-  const html = withdrawalScreenshotEmailHtml()
+  const content = await buildWithdrawalEmailContent()
   const result = await sendHtmlEmail({
     to: SEND_TO_EMAIL,
-    subject: WITHDRAWAL_SCREENSHOT_SUBJECT,
-    html,
+    subject: content.subject,
+    html: content.html,
   })
 
   if (result.skipped) {
@@ -134,7 +190,9 @@ async function sendWithdrawalNoticeOnce() {
   console.log('Sent once.')
   console.log('  To:', SEND_TO_EMAIL)
   console.log('  Name in body:', RECIPIENT_NAME)
-  console.log('  Subject:', WITHDRAWAL_SCREENSHOT_SUBJECT)
+  console.log('  USD:', content.withdrawalUsd)
+  console.log('  DOGE:', content.withdrawalDoge, `@ $${formatRate(content.dogeUsd)} (${content.rateSource})`)
+  console.log('  Subject:', content.subject)
   console.log('  Resend id:', result.id || '(none)')
 }
 

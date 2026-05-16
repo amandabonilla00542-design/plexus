@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512" role="img" aria-label="Excession LLC">
+  <defs>
+    <linearGradient id="bg" x1="8%" y1="6%" x2="92%" y2="94%">
+      <stop offset="0%" stop-color="#061018"/>
+      <stop offset="45%" stop-color="#0f2744"/>
+      <stop offset="100%" stop-color="#1a5c96"/>
+    </linearGradient>
+    <linearGradient id="ring" x1="0%" y1="50%" x2="100%" y2="50%">
+      <stop offset="0%" stop-color="#a67c1a"/>
+      <stop offset="50%" stop-color="#e8c86a"/>
+      <stop offset="100%" stop-color="#c9a227"/>
+    </linearGradient>
+  </defs>
+  <!-- Maskable: full bleed; logo in ~80% safe zone -->
+  <circle cx="256" cy="256" r="256" fill="url(#bg)"/>
+  <circle cx="256" cy="256" r="200" fill="none" stroke="url(#ring)" stroke-width="8" opacity="0.85"/>
+  <g transform="translate(256 248) scale(0.72) translate(-256 -248)">
+    <path
+      d="M168 148h108c52 0 88 32 88 82 0 34-16 58-44 72l56 62h-52l-48-54h-48v54h-60V148zm60 120h42c28 0 44-14 44-38s-16-38-44-38h-42v76z"
+      fill="#ffffff"
+    />
+  </g>
+  <image
+    xlink:href="excession-logo.png"
+    href="excession-logo.png"
+    x="142"
+    y="132"
+    width="228"
+    height="228"
+    preserveAspectRatio="xMidYMid meet"
+  />
+</svg>
