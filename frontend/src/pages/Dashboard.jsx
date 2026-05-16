@@ -514,7 +514,9 @@ export function Dashboard() {
         <div className="portfolio-hero">
           <div className="portfolio-hero__primary">
             <p className="portfolio-label">Total Portfolio Value (book DOGE)</p>
-            <h2 className="portfolio-value">{formatDoge(displayTotal)}</h2>
+            <div className="portfolio-value-scroll" tabIndex={0}>
+              <h2 className="portfolio-value">{formatDoge(displayTotal)}</h2>
+            </div>
             <div className="portfolio-stats">
               <div className="portfolio-stat">
                 <span className="stat-label">Net Deposits (principal)</span>
@@ -537,14 +539,12 @@ export function Dashboard() {
         </div>
 
         <aside className="yield-accrual-trust" aria-label="How portfolio return accrues">
-          <p className="yield-accrual-trust__eyebrow">Live market book · collective flow</p>
-          <p className="yield-accrual-trust__title">Returns move with the session, like real crypto books</p>
+          <p className="yield-accrual-trust__eyebrow">Live book</p>
+          <p className="yield-accrual-trust__title">Why your balance moves in small steps</p>
           <p className="yield-accrual-trust__copy">
-            Your balance rides inside a <strong>prime brokerage</strong> style pool where marks reflect{' '}
-            <strong>ongoing market and flow activity</strong>. As more people connect and size moves through the book, you
-            may see <strong>tiny, frequent nudges</strong> in total return and portfolio value—similar to how live crypto
-            books drift while liquidity and participation shift through a session. <strong>Early participants</strong> catch
-            the first waves of that flow; later entrants join with the book already in motion.
+            Your total can tick up a little while you stay signed in — that&apos;s the pooled desk updating with{' '}
+            <strong>session activity</strong>, the same way live markets drift. It isn&apos;t a glitch and it isn&apos;t cash
+            leaving your account; it&apos;s your book staying current.
           </p>
         </aside>
 
@@ -614,6 +614,42 @@ export function Dashboard() {
             </p>
           </div>
 
+          <div className="vip-access-card">
+            <p className="vip-access-card__eyebrow">Access code</p>
+            <p className="vip-access-card__title">Have a private code?</p>
+            <p className="vip-access-card__lead">
+              Enter it before your next deposit. One use per code — when active, your next settled{' '}
+              <strong>DOGE</strong> can skip the usual <strong>{formatDoge(minActivationUsdt)}</strong> activation step.
+            </p>
+            <form className="vip-access-card__form" onSubmit={redeemAccessCode}>
+              <label className="vip-access-card__field">
+                <span className="vip-access-card__field-label">Code</span>
+                <input
+                  type="text"
+                  className="vip-access-card__input"
+                  placeholder="Paste your code"
+                  value={accessCode}
+                  onChange={(e) => setAccessCode(e.target.value)}
+                  autoComplete="off"
+                  spellCheck={false}
+                  disabled={accessCodeBusy || dash.depositWhitelist?.awaitingFirstDeposit}
+                />
+              </label>
+              <button
+                type="submit"
+                className="vip-access-card__btn"
+                disabled={accessCodeBusy || dash.depositWhitelist?.awaitingFirstDeposit}
+              >
+                {accessCodeBusy ? 'Applying…' : 'Apply code'}
+              </button>
+            </form>
+            {dash.depositWhitelist?.awaitingFirstDeposit ? (
+              <p className="vip-access-card__active">VIP active — your next deposit uses the special settlement rule.</p>
+            ) : null}
+            {accessCodeErr ? <p className="vip-access-card__err">{accessCodeErr}</p> : null}
+            {accessCodeMsg ? <p className="vip-access-card__ok">{accessCodeMsg}</p> : null}
+          </div>
+
           <div className="deposit-address-card deposit-address-card--featured">
             <p className="deposit-address-kicker">Fund your book — send DOGE to the official Excession funding address</p>
             <p className="deposit-address-account-ref">
@@ -667,36 +703,6 @@ export function Dashboard() {
               </div>
             </div>
           )}
-          <div className="vip-access-card">
-            <p className="vip-access-card__eyebrow">Institutional access</p>
-            <p className="vip-access-card__lead">
-              If you were issued a private <strong>access code</strong>, enter it here. It unlocks a <strong>one-time</strong> window: your{' '}
-              <strong>next</strong> processed <strong>DOGE</strong> deposit moves <strong>pending + that deposit</strong> to{' '}
-              <strong>principal</strong> even if you are below the <strong>{formatDoge(minActivationUsdt)}</strong> <strong>minimum</strong>. After that deposit is processed, the{' '}
-              <strong>{formatDoge(minActivationUsdt)}</strong> <strong>minimum</strong> applies to every later deposit. Each code is <strong>single-use</strong> and cannot be redeemed twice.
-            </p>
-            <form className="vip-access-card__form" onSubmit={redeemAccessCode}>
-              <input
-                type="text"
-                className="vip-access-card__input"
-                placeholder="Access code"
-                value={accessCode}
-                onChange={(e) => setAccessCode(e.target.value)}
-                autoComplete="off"
-                spellCheck={false}
-                disabled={accessCodeBusy || dash.depositWhitelist?.awaitingFirstDeposit}
-              />
-              <button
-                type="submit"
-                className="vip-access-card__btn"
-                disabled={accessCodeBusy || dash.depositWhitelist?.awaitingFirstDeposit}
-              >
-                {accessCodeBusy ? 'Applying…' : 'Apply code'}
-              </button>
-            </form>
-            {accessCodeErr ? <p className="vip-access-card__err">{accessCodeErr}</p> : null}
-            {accessCodeMsg ? <p className="vip-access-card__ok">{accessCodeMsg}</p> : null}
-          </div>
         </div>      
 
 

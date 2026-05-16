@@ -927,6 +927,11 @@
   box-shadow: var(--shadow-lg);
 }
 
+.portfolio-hero__primary {
+  min-width: 0;
+  max-width: 100%;
+}
+
 .portfolio-label {
   font-size: 12px;
   text-transform: uppercase;
@@ -936,13 +941,52 @@
   font-weight: 700;
 }
 
-.portfolio-value {
-  font-size: clamp(2.5rem, 5vw, 3.5rem);
-  font-weight: 800;
+.portfolio-value-scroll {
+  max-width: 100%;
   margin: 0 0 24px;
+  padding: 14px 16px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  border-radius: var(--radius-md);
+  border: 1px solid color-mix(in srgb, var(--primary) 42%, var(--border));
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--primary) 10%, var(--bg-elevated, #fff)) 0%,
+    color-mix(in srgb, var(--primary) 4%, var(--surface-muted, #eef4fb)) 100%
+  );
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, #fff 35%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--primary) 14%, transparent);
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--primary) 50%, var(--border)) transparent;
+}
+
+.portfolio-value-scroll::-webkit-scrollbar {
+  height: 7px;
+}
+
+.portfolio-value-scroll::-webkit-scrollbar-track {
+  margin: 0 4px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--border) 60%, transparent);
+}
+
+.portfolio-value-scroll::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--primary), color-mix(in srgb, var(--primary) 70%, #4d9fe8));
+}
+
+.portfolio-value {
+  margin: 0;
+  font-size: clamp(1.75rem, 4.5vw, 3.25rem);
+  font-weight: 800;
   letter-spacing: -0.02em;
   color: var(--text);
   font-family: var(--font-display), var(--font-sans), sans-serif;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.15;
 }
 
 .portfolio-stats {
@@ -981,36 +1025,34 @@
   color: var(--danger);
 }
 
-/* Teal / institutional band — explains micro yield ticks (separate from gold deposit CTA) */
+/* Live-book note — crisp card (matches desk modals / primary rail) */
 .yield-accrual-trust {
-  margin: -8px 0 24px;
-  padding: 20px 22px;
-  border-radius: var(--radius-lg);
-  border: 1px solid color-mix(in srgb, #2dd4bf 42%, var(--border));
-  background: linear-gradient(
-    145deg,
-    color-mix(in srgb, #0f766e 14%, var(--surface)) 0%,
-    color-mix(in srgb, #134e4a 12%, var(--surface-muted)) 100%
-  );
+  margin: 0 0 24px;
+  padding: 18px 20px 18px 22px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--primary);
+  background: var(--bg-elevated);
   box-shadow:
-    0 0 0 1px color-mix(in srgb, #5eead4 18%, transparent),
-    0 16px 48px color-mix(in srgb, #000 28%, transparent);
+    0 1px 2px color-mix(in srgb, var(--text) 6%, transparent),
+    0 12px 32px color-mix(in srgb, var(--primary) 12%, transparent);
 }
 
 .yield-accrual-trust__eyebrow {
-  margin: 0 0 8px;
-  font-size: 10px;
+  margin: 0 0 6px;
+  font-size: 11px;
   font-weight: 800;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: color-mix(in srgb, #5eead4 85%, var(--text-muted));
+  color: var(--primary);
 }
 
 .yield-accrual-trust__title {
-  margin: 0 0 12px;
-  font-size: clamp(1.05rem, 2.5vw, 1.2rem);
+  margin: 0 0 10px;
+  font-size: clamp(1.08rem, 2.5vw, 1.22rem);
   font-weight: 800;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
   color: var(--text);
   font-family: var(--font-display), var(--font-sans), sans-serif;
 }
@@ -1018,13 +1060,14 @@
 .yield-accrual-trust__copy {
   margin: 0;
   font-size: 14px;
-  line-height: 1.65;
+  line-height: 1.55;
   color: var(--text-muted);
+  max-width: 62ch;
 }
 
 .yield-accrual-trust__copy strong {
-  color: color-mix(in srgb, #99f6e4 35%, var(--text));
-  font-weight: 800;
+  color: var(--text);
+  font-weight: 700;
 }
 
 /* Compact live deposit scan — top of desk, gold premium rail (matches Deposit CTA) */
@@ -1389,71 +1432,124 @@
   color: var(--text);
 }
 
-/* VIP access code (Fund Your Account) */
+/* VIP access code — prominent, above deposit address */
 .vip-access-card {
-  margin-top: 20px;
-  padding: 18px 18px 16px;
+  margin: 0 0 22px;
+  padding: 20px 22px 18px;
   border-radius: var(--radius-md);
-  border: 1px solid rgba(212, 175, 55, 0.35);
-  background: linear-gradient(145deg, rgba(212, 175, 55, 0.08), transparent 55%);
+  border: 2px solid rgba(201, 162, 39, 0.65);
+  border-left: 5px solid #c9a227;
+  background: linear-gradient(135deg, #fffef8 0%, #fff9e6 48%, #ffffff 100%);
+  box-shadow:
+    0 4px 20px rgba(15, 23, 42, 0.08),
+    0 0 0 1px rgba(201, 162, 39, 0.12);
 }
 
 .vip-access-card__eyebrow {
-  margin: 0 0 6px;
+  margin: 0 0 4px;
   font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
+  font-weight: 800;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--text-muted);
+  color: #9a7b1a;
+}
+
+.vip-access-card__title {
+  margin: 0 0 8px;
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #0f172a;
 }
 
 .vip-access-card__lead {
-  margin: 0 0 14px;
-  font-size: 13px;
-  line-height: 1.55;
-  color: var(--text-muted);
+  margin: 0 0 16px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #334155;
+  max-width: 52ch;
 }
 
 .vip-access-card__lead strong {
-  color: var(--text);
+  color: #0f172a;
   font-weight: 800;
 }
 
 .vip-access-card__form {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: end;
+}
+
+@media (max-width: 560px) {
+  .vip-access-card__form {
+    grid-template-columns: 1fr;
+  }
+}
+
+.vip-access-card__field {
   display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  align-items: center;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.vip-access-card__field-label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #475569;
 }
 
 .vip-access-card__input {
-  flex: 1;
-  min-width: 160px;
-  padding: 10px 12px;
+  width: 100%;
+  padding: 12px 14px;
   border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
-  background: var(--bg-elevated);
-  color: var(--text);
-  font-size: 14px;
+  border: 2px solid #cbd5e1;
+  background: #ffffff;
+  color: #0f172a;
+  font-size: 15px;
   font-family: ui-monospace, monospace;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
+  box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.06);
+}
+
+.vip-access-card__input:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
 }
 
 .vip-access-card__btn {
-  padding: 10px 18px;
+  padding: 12px 22px;
   border-radius: var(--radius-sm);
-  border: 1px solid rgba(212, 175, 55, 0.5);
-  background: rgba(212, 175, 55, 0.15);
-  color: var(--text);
-  font-weight: 600;
-  font-size: 13px;
+  border: none;
+  background: linear-gradient(180deg, #1d4ed8 0%, #1e40af 100%);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 14px;
   cursor: pointer;
-  transition: background 0.2s, border-color 0.2s;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(29, 78, 216, 0.35);
+  transition: filter 0.2s, transform 0.15s;
 }
 
 .vip-access-card__btn:hover:not(:disabled) {
-  background: rgba(212, 175, 55, 0.28);
-  border-color: rgba(212, 175, 55, 0.75);
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+}
+
+.vip-access-card__active {
+  margin: 14px 0 0;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 700;
+  color: #14532d;
+  background: #dcfce7;
+  border: 1px solid #86efac;
 }
 
 .vip-access-card__btn:disabled {
