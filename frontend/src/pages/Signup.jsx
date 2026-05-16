@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { AUTH_TOKEN_KEY, authFetch } from '../api/client'
+import { AUTH_NETWORK_MESSAGE, messageFromAuthResponse } from '../lib/authUserMessage'
 import { useAuth } from '../context/AuthContext'
 import './AuthPage.css'
 
@@ -50,7 +51,7 @@ export function Signup() {
               })
               const data = await res.json().catch(() => ({}))
               if (!res.ok) {
-                setError(data.message || 'Could not create account.')
+                setError(messageFromAuthResponse(res, data))
                 return
               }
               if (data.token) {
@@ -64,10 +65,12 @@ export function Signup() {
                 await refresh()
               } catch {
                 setProcessingSignup(false)
-                setError('Account created, but we could not finish sign-in. Try logging in with your email and password.')
+                setError(
+                  'Your account may be ready. Please sign in with your email and password — or try again in a moment.',
+                )
               }
             } catch {
-              setError('Network error. Is the API running?')
+              setError(AUTH_NETWORK_MESSAGE)
             } finally {
               setLoading(false)
             }

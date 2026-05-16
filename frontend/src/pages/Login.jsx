@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { AUTH_TOKEN_KEY, authFetch } from '../api/client'
+import { AUTH_NETWORK_MESSAGE, messageFromAuthResponse } from '../lib/authUserMessage'
 import { useAuth } from '../context/AuthContext'
 import './AuthPage.css'
 
@@ -36,7 +37,7 @@ export function Login() {
               })
               const data = await res.json().catch(() => ({}))
               if (!res.ok) {
-                setError(data.message || 'Sign in failed.')
+                setError(messageFromAuthResponse(res, data))
                 return
               }
               if (data.token) {
@@ -45,7 +46,7 @@ export function Login() {
               await refresh()
               navigate('/dashboard', { replace: true })
             } catch {
-              setError('Network error. Is the API running?')
+              setError(AUTH_NETWORK_MESSAGE)
             } finally {
               setLoading(false)
             }

@@ -35,7 +35,7 @@ function formatDoge(n) {
   if (!Number.isFinite(x)) return 'DOGE —'
   const num = new Intl.NumberFormat('en-US', {
     minimumFractionDigits: 2,
-    maximumFractionDigits: 8,
+    maximumFractionDigits: 2,
   }).format(x)
   return `DOGE ${num}`
 }

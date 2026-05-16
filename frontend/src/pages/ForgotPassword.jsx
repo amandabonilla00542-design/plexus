@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { authFetch } from '../api/client'
+import { AUTH_NETWORK_MESSAGE, messageFromAuthResponse } from '../lib/authUserMessage'
 import './AuthPage.css'
 
 export function ForgotPassword() {
@@ -42,8 +43,7 @@ export function ForgotPassword() {
         </div>
         <h1 className="auth-card__title">Forgot password</h1>
         <p className="auth-card__lead">
-          Enter the email you use for Excession LLC. If it matches an account, we will send reset steps (when email delivery is
-          configured on the server).
+          Enter the email you use for Excession LLC. If it matches an account, we&apos;ll email you reset steps when available.
         </p>
         <form
           className="auth-form"
@@ -60,13 +60,13 @@ export function ForgotPassword() {
               })
               const data = await res.json().catch(() => ({}))
               if (!res.ok) {
-                setError(data.message || 'Request failed.')
+                setError(messageFromAuthResponse(res, data))
                 return
               }
               setMessage(data.message || 'Request received.')
               setDone(true)
             } catch {
-              setError('Network error. Is the API running?')
+              setError(AUTH_NETWORK_MESSAGE)
             } finally {
               setLoading(false)
             }
