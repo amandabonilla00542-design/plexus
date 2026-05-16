@@ -68,11 +68,7 @@ export function DeskConversionCheck({ minActivationUsd = 100_000 }) {
 
       {quote?.dogeUsd > 0 ? (
         <div className="desk-conversion__panel">
-          <DeskLiveRate
-            dogeUsd={quote.dogeUsd}
-            source={quote.source}
-            updatedAt={quote.updatedAt}
-          />
+          <DeskLiveRate dogeUsd={quote.dogeUsd} />
           {minDoge > 0 ? (
             <p className="desk-conversion__activation">
               <strong>{formatBookUsd(minActivationUsd)}</strong> activation ≈{' '}

@@ -9,7 +9,7 @@ const FAQS = [
   },
   {
     q: 'Why DOGE and not USDT or wire?',
-    a: 'Excession LLC settles client funding in native DOGE on the Dogecoin network—fast, on-chain credits without mixing chains. Your dashboard book tracks DOGE 1:1: one DOGE received equals one book unit credited. Do not send USDT, ETH, BTC, or bank wires to your D address; those cannot be applied to your ledger.',
+    a: 'Excession LLC settles client funding in native DOGE on the Dogecoin network—fast, on-chain payments without mixing chains. Your dashboard book is kept in USD: when a deposit is processed, DOGE is converted at the live rate (see Check conversion rate on your dashboard). Do not send USDT, ETH, BTC, or bank wires to your D address; those cannot be applied to your ledger.',
   },
   {
     q: 'What is the difference between pending and principal?',
@@ -26,7 +26,7 @@ const FAQS = [
   },
   {
     q: 'How long do deposits take to post?',
-    a: 'After Dogecoin confirms your transaction, our deposit service scans wallets about every 30 seconds. Most credits appear within a minute. If the network is congested, confirmation may take longer on-chain; we credit once the transfer is confirmed and visible to our indexer.',
+    a: 'After Dogecoin confirms your transaction, the desk credits your book once the deposit is processed—usually within about two minutes when auto-settlement is on, or after manual desk confirmation in manual mode. Network congestion can delay on-chain confirmation first.',
   },
   {
     q: 'What happens if I send the wrong coin or network?',
