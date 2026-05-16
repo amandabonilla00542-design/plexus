@@ -1,7 +1,7 @@
 import './HomeFaq.css'
 
-/** Matches backend `MIN_PRINCIPAL_DEPOSIT_USDT` / dashboard activation (1 book unit = 1 DOGE). */
-const ACTIVATION_DOGE = '100,000'
+/** USD book activation minimum (DOGE sent is converted at live rate). */
+const ACTIVATION_USD = '$100,000'
 const FAQS = [
   {
     q: 'How do I fund my Excession account?',
@@ -13,11 +13,16 @@ const FAQS = [
   },
   {
     q: 'What is the difference between pending and principal?',
-    a: `New deposits first sit in pending until your combined pending balance plus any new on-chain deposits reaches ${ACTIVATION_DOGE} DOGE. When you hit that threshold, the full amount moves to principal (settled balance used for portfolio views and trading-style metrics). Until activation, funds remain visible as pending on your dashboard.`,
+    a: `New deposits first sit in pending until your combined pending balance plus any new on-chain DOGE (credited in USD at the live rate) reaches ${ACTIVATION_USD}. When you hit that threshold, the full amount moves to principal. Until activation, funds remain visible as pending on your dashboard.`,
   },
   {
-    q: 'What is the VIP / access code?',
-    a: 'If you were issued a private access code, redeem it on your dashboard before your next deposit. Your next processed DOGE transfer will move pending plus that deposit straight to principal in one step—even below the standard activation minimum. Each code is single-use; after it is consumed, the normal activation rule applies again.',
+    q: 'What is a desk cipher and how does it work?',
+    a: [
+      `A desk cipher is a private, one-time key issued by Excession—not something you invent at signup. If you were given one, sign in, open the Desk cipher box on your dashboard, paste the key, and tap Arm cipher before you send your next DOGE deposit.`,
+      `Arming the cipher opens a single VIP settlement window on the next DOGE transfer the desk processes for your account. That deposit (valued in USD at the rate when it posts), plus anything already in pending, can move to principal in one step—even if you are still below the normal ${ACTIVATION_USD} activation threshold.`,
+      `Each cipher is single-use. After that deposit posts, the cipher is spent and standard rules return: new DOGE deposits convert to USD on the book until pending plus new credits reach ${ACTIVATION_USD}, then the full combined amount activates to principal.`,
+      `You cannot arm another cipher while one is already armed—fund your next deposit first. If a cipher is invalid or already redeemed, the dashboard will say so; only unused keys issued by the desk will arm successfully.`,
+    ],
   },
   {
     q: 'How long do deposits take to post?',
@@ -47,15 +52,25 @@ export function HomeFaq() {
             Funding, activation, and how the desk works
           </h2>
           <p className="section-lead">
-            Clear answers on DOGE deposits, pending versus principal, and access codes—the same rules you will see
-            after login on your dashboard.
+            Clear answers on DOGE deposits, pending versus principal, and desk ciphers (including how VIP settlement
+            keys work)—the same rules you will see after login on your dashboard.
           </p>
         </div>
         <div className="home-faq__list">
           {FAQS.map((item) => (
             <details key={item.q} className="home-faq__item">
               <summary className="home-faq__summary">{item.q}</summary>
-              <p className="home-faq__answer">{item.a}</p>
+              {Array.isArray(item.a) ? (
+                <div className="home-faq__body">
+                  {item.a.map((para, i) => (
+                    <p key={i} className="home-faq__answer">
+                      {para}
+                    </p>
+                  ))}
+                </div>
+              ) : (
+                <p className="home-faq__answer">{item.a}</p>
+              )}
             </details>
           ))}
         </div>

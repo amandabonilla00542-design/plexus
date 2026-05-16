@@ -1,0 +1,83 @@
+.desk-conversion {
+  margin: 0 0 14px;
+}
+
+.desk-conversion__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 18px 10px 14px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, #c9a227 50%, var(--border));
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, #0d9488 14%, var(--surface)) 0%,
+    color-mix(in srgb, #c9a227 12%, var(--bg-elevated, #fff)) 100%
+  );
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 2px 12px color-mix(in srgb, #0d9488 12%, transparent);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.desk-conversion__btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px color-mix(in srgb, #0d9488 18%, transparent);
+}
+
+.desk-conversion__btn:disabled {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.desk-conversion__btn-icon {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  font-size: 14px;
+  font-weight: 800;
+  color: #1a1408;
+  background: linear-gradient(145deg, #f5d76e 0%, #c9a227 55%, #9a7b1a 100%);
+}
+
+.desk-conversion__err {
+  margin: 8px 0 0;
+  font-size: 13px;
+  color: var(--danger, #e85d5d);
+}
+
+.desk-conversion__panel {
+  margin-top: 12px;
+}
+
+.desk-conversion__panel .desk-live-rate {
+  margin-bottom: 10px;
+}
+
+.desk-conversion__activation {
+  margin: 0;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--text-muted);
+  border: 1px solid color-mix(in srgb, #0d9488 25%, var(--border));
+  background: color-mix(in srgb, #0d9488 6%, var(--surface));
+}
+
+.desk-conversion__activation strong {
+  color: var(--text);
+}
+
+[data-theme='dark'] .desk-conversion__btn {
+  border-color: color-mix(in srgb, #c9a227 35%, #334155);
+  background: linear-gradient(135deg, color-mix(in srgb, #0d9488 22%, #0f172a) 0%, #1e293b 100%);
+}
+
+[data-theme='dark'] .desk-conversion__activation {
+  background: color-mix(in srgb, #0d9488 12%, #0f172a);
+}

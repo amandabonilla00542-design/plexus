@@ -25,13 +25,16 @@ function resolveDepositAddress(user) {
   return sharedDepositAddress()
 }
 
-/** Same as dashboard + autoDepositListener — pending + new deposits must reach this to activate. */
-const MIN_PRINCIPAL_DEPOSIT_USDT = 100_000
+/** USD book minimum — pending + new deposit credits must reach this to activate principal. */
+const MIN_ACTIVATION_USD = 100_000
+/** @deprecated alias — book units are USD, not DOGE */
+const MIN_PRINCIPAL_DEPOSIT_USDT = MIN_ACTIVATION_USD
 
 module.exports = {
   ENABLE_PER_USER_DODGE_WALLET,
   ENABLE_AUTO_DEPOSIT_LISTENER,
   sharedDepositAddress,
   resolveDepositAddress,
+  MIN_ACTIVATION_USD,
   MIN_PRINCIPAL_DEPOSIT_USDT,
 }

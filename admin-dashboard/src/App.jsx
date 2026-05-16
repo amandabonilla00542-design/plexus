@@ -89,14 +89,28 @@ function fmtDoge(n) {
 }
 
 function fmtUsd(n) {
-  return fmtDoge(n)
+  const x = Number(n)
+  if (!Number.isFinite(x)) return '—'
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(x)
+}
+
+function fmtDogeApprox(usd, dogeUsd) {
+  const u = Number(usd)
+  const r = Number(dogeUsd)
+  if (!Number.isFinite(u) || u <= 0 || !Number.isFinite(r) || r <= 0) return ''
+  return fmtDoge(u / r)
 }
 
 function fmtUsdShort(n) {
   const x = Number(n)
   if (!Number.isFinite(x)) return '—'
-  if (Math.abs(x) >= 1e6) return `${(x / 1e6).toFixed(2)}M`
-  if (Math.abs(x) >= 1e3) return `${(x / 1e3).toFixed(1)}k`
+  if (Math.abs(x) >= 1e6) return `$${(x / 1e6).toFixed(2)}M`
+  if (Math.abs(x) >= 1e3) return `$${(x / 1e3).toFixed(1)}k`
   return fmtUsd(x)
 }
 
@@ -166,6 +180,7 @@ export default function App() {
   const [gateErr, setGateErr] = useState(null)
 
   const [users, setUsers] = useState([])
+  const [deskFx, setDeskFx] = useState(null)
   const [loadErr, setLoadErr] = useState(null)
   const [loading, setLoading] = useState(false)
   const [yieldModal, setYieldModal] = useState(null)
@@ -259,6 +274,7 @@ export default function App() {
     }
     const list = Array.isArray(data.users) ? data.users : []
     setUsers(list)
+    setDeskFx(data.fx || null)
     setLoading(false)
   }, [])
 
@@ -293,6 +309,7 @@ export default function App() {
     }
     setGate(false)
     setUsers(Array.isArray(data.users) ? data.users : [])
+    setDeskFx(data.fx || null)
   }
 
   function lockout() {
@@ -314,11 +331,11 @@ export default function App() {
       alert('Enter a non-zero number (negative allowed).')
       return
     }
-    const minPrincipal = 100_000
+    const minPrincipal = deskFx?.minActivationUsd ?? 100_000
     const vipOn = !!yieldModal.depositWhitelist?.awaitingFirstDeposit
     if (yieldBookTarget === 'principal' && !vipOn && n > 0 && n < minPrincipal) {
       alert(
-        `Principal must be at least ${minPrincipal.toLocaleString('en-US')} unless VIP is active.\n\nYou entered ${n.toLocaleString('en-US')} — use "Pending toward activation" instead.`,
+        `Principal must be at least $${minPrincipal.toLocaleString('en-US')} (USD book) unless VIP is active.\n\nYou entered ${n.toLocaleString('en-US')} — use "Pending toward activation" instead.`,
       )
       return
     }
@@ -433,7 +450,13 @@ export default function App() {
         <div className="app-phone">
           <AppShellHeader
             title="Treasury"
-            subtitle={loading ? 'Syncing ledger…' : `${users.length} account${users.length === 1 ? '' : 's'} on file`}
+            subtitle={
+              loading
+                ? 'Syncing ledger…'
+                : deskFx?.dogeUsd
+                  ? `${users.length} accounts · DOGE ${deskFx.dogeUsd.toFixed(4)} · $100k min`
+                  : `${users.length} account${users.length === 1 ? '' : 's'} on file`
+            }
             right={
               deferredInstall ? (
                 <button type="button" className="app-install-btn" onClick={() => void runPwaInstall()}>
@@ -627,8 +650,8 @@ export default function App() {
                 />
                 <span className="book-target-picker__label">Pending toward activation</span>
                 <span className="book-target-picker__hint">
-                  Partial funding → <strong>pending</strong>. If pending reaches <strong>100k+</strong> after this add, the
-                  server <strong>moves all pending to principal</strong> automatically.
+                  Partial funding (USD book) → <strong>pending</strong>. If pending reaches <strong>$100k+</strong> after
+                  this add, the server <strong>moves all pending to principal</strong> automatically.
                 </span>
               </label>
               <label className={`book-target-picker__opt${yieldBookTarget === 'accrued' ? ' is-on' : ''}`}>
@@ -646,12 +669,12 @@ export default function App() {
               </label>
             </fieldset>
             <label className="modal-panel__field-label" htmlFor="book-adjust-amount">
-              Amount (± book units)
+              Amount (± USD book)
             </label>
             <input
               id="book-adjust-amount"
               className="input"
-              placeholder="e.g. 100000 or -50.25"
+              placeholder="e.g. 100000 USD or -50.25"
               value={yieldAmt}
               onChange={(e) => setYieldAmt(e.target.value)}
             />

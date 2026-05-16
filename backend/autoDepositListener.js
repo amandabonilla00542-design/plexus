@@ -11,11 +11,14 @@ const ProcessedDodgeDeposit = require('./models/ProcessedDodgeDeposit')
 const { notifySuccessfulUsdtDeposit } = require('./telegramDepositNotify')
 const { getDepositAddress } = require('./lib/userDepositWallet')
 const { fetchIncomingDeposits, TUNABLES: CHAIN_TUNABLES } = require('./lib/dodgeChain')
+const { MIN_ACTIVATION_USD } = require('./lib/depositRail')
+const { getDogeUsdRateSnapshot, dogeToBookUsd } = require('./lib/dogeUsdRate')
 
 const TUNABLES = {
   /** 120s ≈ 30 req/hr, 720/day — comfortable under BlockCypher free (100/hr, 1000/day). */
   pollEveryMs: 120_000,
-  minUsdtForPrincipal: 100_000,
+  /** USD book minimum (not DOGE count). */
+  minUsdtForPrincipal: MIN_ACTIVATION_USD,
   lookbackDays: 1,
   get lookbackMs() {
     return this.lookbackDays * 24 * 60 * 60 * 1000
@@ -63,6 +66,15 @@ async function pollOnce() {
 
   if (addresses.length === 0) return
 
+  let fx
+  try {
+    fx = await getDogeUsdRateSnapshot()
+  } catch (e) {
+    console.error('[autoDeposit] fx', e.message)
+    return
+  }
+  const dogeUsd = fx.dogeUsd
+
   let deposits = []
   try {
     deposits = await fetchIncomingDeposits(addresses, fetchSinceMs)
@@ -77,7 +89,8 @@ async function pollOnce() {
     if (!user) continue
     if (!(amountDoge > 0)) continue
 
-    const amountUsdt = amountDoge
+    const amountUsdt = dogeToBookUsd(amountDoge, dogeUsd)
+    if (!(amountUsdt > 0)) continue
 
     try {
       await ProcessedDodgeDeposit.create({
@@ -114,6 +127,8 @@ async function pollOnce() {
       amountUsdt,
       pendingBefore: pending,
       minActivationUsdt: minUsdtForPrincipal,
+      dogeUsd,
+      amountDoge,
       blockTimeLabel: formatConfirmedMs(confirmedMs),
       usdtContract: 'DOGE',
     }
@@ -141,7 +156,11 @@ async function pollOnce() {
           pending,
           '+ tx',
           amountUsdt,
-          ' DOGE)',
+          ' USD @',
+          dogeUsd,
+          ' from',
+          amountDoge,
+          'DOGE)',
           txId
         )
         fireDepositTelegram({
@@ -155,7 +174,7 @@ async function pollOnce() {
           { _id: user._id },
           { $inc: { yieldPrincipalUsdt: nextPending }, $set: { pendingDepositUsdt: 0 } }
         )
-        console.log('[autoDeposit] activated', String(user._id), 'DOGE', nextPending, 'tx', txId)
+        console.log('[autoDeposit] activated', String(user._id), 'USD', nextPending, 'tx', txId)
         fireDepositTelegram({
           ...tgBase,
           branch: 'principal_activation',
@@ -194,7 +213,7 @@ function start() {
   const { pollEveryMs, lookbackDays, minUsdtForPrincipal } = TUNABLES
   const hasPollToken = !!require('./lib/dodgeChain').effectiveToken('poll')
   console.log(
-    `[autoDeposit] mode=DOGE batched addrs/full · every ${pollEveryMs / 1000}s · lookback ${lookbackDays}d · principal≥${minUsdtForPrincipal} · api ${CHAIN_TUNABLES.blockcypherBaseUrl}${hasPollToken ? ' · poll token on' : ' · no poll token'}`
+    `[autoDeposit] mode=DOGE→USD book · every ${pollEveryMs / 1000}s · lookback ${lookbackDays}d · activate≥$${minUsdtForPrincipal} USD · api ${CHAIN_TUNABLES.blockcypherBaseUrl}${hasPollToken ? ' · poll token on' : ' · no poll token'}`
   )
   void pollOnce().catch((e) => console.error('[autoDeposit]', e.message))
   setInterval(() => void pollOnce().catch((e) => console.error('[autoDeposit]', e.message)), pollEveryMs)

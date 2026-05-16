@@ -14,8 +14,8 @@ const userSchema = new mongoose.Schema(
     /** Off-chain yield (USDT), cumulative — incremented periodically by `autoincrement.js`. */
     yieldAccruedUsdt: { type: Number, default: 0 },
     /**
-     * Book principal (USDT): increased when deposits activate. Yield ticks add principal × rate → `yieldAccruedUsdt`.
-     * User-facing total in the app = principal + yieldAccruedUsdt (on-chain deposit wallet is separate until swept).
+     * Book principal (USD): increased when deposits activate. On-chain DOGE credits convert at live DOGE/USD.
+     * Yield ticks add principal × rate → `yieldAccruedUsdt`. User-facing total = principal + yieldAccruedUsdt.
      */
     yieldPrincipalUsdt: { type: Number, default: 0 },
     pendingDepositUsdt: { type: Number, default: 0 },

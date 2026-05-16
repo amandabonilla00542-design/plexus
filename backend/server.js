@@ -5,6 +5,7 @@ const cookieParser = require('cookie-parser')
 const mongoose = require('mongoose')
 const authRoutes = require('./routes/authRoutes')
 const dashboardRoutes = require('./routes/dashboardRoutes')
+const fxRoutes = require('./routes/fxRoutes')
 const adminRoutes = require('./routes/adminRoutes')
 const { startYieldScheduler } = require('./autoincrement.js')
 const autoDepositListener = require('./autoDepositListener')
@@ -63,6 +64,7 @@ app.get('/api/health', (req, res) => {
 
 app.use('/api/auth', authRoutes)
 app.use('/api/dashboard', dashboardRoutes)
+app.use('/api/fx', fxRoutes)
 app.use('/api/admin', adminRoutes)
 
 mongoose

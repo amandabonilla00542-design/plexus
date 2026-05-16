@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { authFetch } from '../api/client'
 import { useAuth } from '../context/AuthContext'
-import { ElonPortraitImg } from '../components/ElonPortraitImg'
+import { DeskConversionCheck } from '../components/DeskConversionCheck'
 import './Dashboard.css'
 
 /** Withdraw settlement scan timing (dashboard UI). */
@@ -29,15 +29,23 @@ const DASH_SPLASH_MIN_MS = 1_450
 /** How often to refetch `/api/dashboard` while this page is open (ms). Set `0` to turn off silent polling. */
 const dashboardPollMs = 10_000
 
-/** Book balances are 1:1 with on-chain DOGE credited (not USD / not Tether). */
-function formatDoge(n) {
+/** Book ledger is USD. DOGE is only the on-chain deposit rail. */
+function formatBookUsd(n) {
   const x = Number(n)
-  if (!Number.isFinite(x)) return 'DOGE —'
-  const num = new Intl.NumberFormat('en-US', {
+  if (!Number.isFinite(x)) return '—'
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(x)
-  return `DOGE ${num}`
+}
+
+function formatDogeAmount(n) {
+  const x = Number(n)
+  if (!Number.isFinite(x) || x <= 0) return '—'
+  const num = new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(Math.ceil(x))
+  return `${num} DOGE`
 }
 
 function delay(ms) {
@@ -236,7 +244,7 @@ export function Dashboard() {
     setAccessCodeMsg(null)
     const trimmed = accessCode.trim()
     if (!trimmed) {
-      setAccessCodeErr('Enter an access code.')
+      setAccessCodeErr('Enter your desk cipher.')
       return
     }
     setAccessCodeBusy(true)
@@ -247,10 +255,10 @@ export function Dashboard() {
       })
       const data = await res.json().catch(() => ({}))
       if (!res.ok) {
-        setAccessCodeErr(data.message || 'Could not apply code.')
+        setAccessCodeErr(data.message || 'Cipher not accepted.')
         return
       }
-      setAccessCodeMsg(data.message || 'Code applied.')
+      setAccessCodeMsg('Cipher armed.')
       setAccessCode('')
       void loadDashboard({ silent: true })
     } catch {
@@ -309,7 +317,7 @@ export function Dashboard() {
   const addr = depositAddr
   const addrShort = addr.length > 12 ? `${addr.slice(0, 8)}…${addr.slice(-8)}` : addr
   const totalReturnPercent = u.principalRaw > 0 ? (u.yieldAccruedRaw / u.principalRaw) * 100 : 0
-  const minActivationUsdt = dash.activationThresholdUsdt ?? 100_000
+  const minActivationUsd = dash.activationThresholdUsdt ?? 100_000
 
   return (
     <div className="dash">
@@ -355,7 +363,7 @@ export function Dashboard() {
                   {copied ? '✓ Copied' : 'Copy address'}
                 </button>
               </div>
-              <p className="deposit-guide-modal__foot">Activation and VIP rules stay on the dashboard card below.</p>
+              <p className="deposit-guide-modal__foot">Funding rules are on your dashboard below.</p>
             </div>
             <div className="modal-footer deposit-guide-modal__footer">
               <button type="button" className="btn btn--primary deposit-guide-modal__ok" onClick={dismissDepositGuide}>
@@ -427,12 +435,13 @@ export function Dashboard() {
                     from this screen.
                   </p>
                   <p className="withdraw-eligibility__outcome-copy withdraw-eligibility__outcome-copy--second">
-                    Accounts with more <strong>settled</strong> balance are usually first in line as each batch opens. There
+                    Accounts with a higher <strong>book total</strong> are usually first in line as each batch opens. There
                     is <strong>no fee or penalty</strong> for staying in while you grow — you are not locked out of adding
                     more; you are simply waiting your turn for the next payout window.
                   </p>
                   <p className="withdraw-eligibility__outcome-note text-muted">
-                    Your settled balance today: <strong className="numeric">{formatDoge(u.principalRaw)}</strong> · Questions?{' '}
+                    Your book total today (same as portfolio on your dashboard):{' '}
+                    <strong className="numeric">{formatBookUsd(u.totalRaw)}</strong> · Questions?{' '}
                     <a href="mailto:info@excessionllc.org">info@excessionllc.org</a>
                   </p>
                 </div>
@@ -504,28 +513,31 @@ export function Dashboard() {
             <span className="deposit-scanner__beam" />
           </span>
           <p className="deposit-scanner__text">
-            <strong>Deposit desk active</strong>
+            <strong>Desk live</strong>
             <span className="deposit-scanner__sep" aria-hidden>·</span>
-            After DOGE confirms to the official funding address, your book is updated — usually within about <strong>2 minutes</strong>
+            Book updates ~<strong>2 min</strong> after DOGE confirms
           </p>
         </div>
 
-        {/* Hero Portfolio Card - Professional look */}
-        <div className="portfolio-hero">
-          <div className="portfolio-hero__primary">
-            <p className="portfolio-label">Total Portfolio Value (book DOGE)</p>
+        <DeskConversionCheck minActivationUsd={minActivationUsd} />
+
+        {/* Balance, trading stats, and desk cipher — side by side on wide screens */}
+        <section className="dashboard-overview" aria-label="Account overview">
+          <div className="portfolio-hero dashboard-overview__balance">
+            <div className="portfolio-hero__primary">
+            <p className="portfolio-label">Total (USD book)</p>
             <div className="portfolio-value-scroll" tabIndex={0}>
-              <h2 className="portfolio-value">{formatDoge(displayTotal)}</h2>
+              <h2 className="portfolio-value">{formatBookUsd(displayTotal)}</h2>
             </div>
             <div className="portfolio-stats">
               <div className="portfolio-stat">
                 <span className="stat-label">Net Deposits (principal)</span>
-                <span className="stat-number">{formatDoge(u.principalRaw)}</span>
+                <span className="stat-number">{formatBookUsd(u.principalRaw)}</span>
               </div>
               <div className="portfolio-stat">
                 <span className="stat-label">Total Return</span>
                 <span className={`stat-number ${u.yieldAccruedRaw >= 0 ? 'positive' : 'negative'}`}>
-                  {u.yieldAccruedRaw >= 0 ? '+' : ''}{formatDoge(u.yieldAccruedRaw)}
+                  {u.yieldAccruedRaw >= 0 ? '+' : ''}{formatBookUsd(u.yieldAccruedRaw)}
                 </span>
               </div>
               <div className="portfolio-stat">
@@ -536,98 +548,38 @@ export function Dashboard() {
               </div>
             </div>
           </div>
-        </div>
-
-        <aside className="yield-accrual-trust" aria-label="How portfolio return accrues">
-          <p className="yield-accrual-trust__eyebrow">Live book</p>
-          <p className="yield-accrual-trust__title">Why your balance moves in small steps</p>
-          <p className="yield-accrual-trust__copy">
-            Your total can tick up a little while you stay signed in — that&apos;s the pooled desk updating with{' '}
-            <strong>session activity</strong>, the same way live markets drift. It isn&apos;t a glitch and it isn&apos;t cash
-            leaving your account; it&apos;s your book staying current.
-          </p>
-        </aside>
-
-        {/* Elon Musk Quote Section */}
-<div className="quote-section">
-  <div className="quote-card">
-    <ElonPortraitImg className="quote-avatar" width={70} height={70} alt="Elon Musk" />
-    <div className="quote-content">
-      <p className="quote-text">
-        "You want to be rich? Build something people want. I put my money where my mouth is — that's why I'm here."
-      </p>
-      <p className="quote-author">— Elon Musk</p>
-    </div>
-  </div>
-</div>
-
-
-
-
-        {/* Stats Grid - 4 premium cards */}
-        <div className="dash__summary">
-          <div className="dash-card">
-            <p className="dash-card__label">Buying Power</p>
-            <p className="dash-card__value numeric">{formatDoge(u.principalRaw * 2)}</p>
-            <p className="dash-card__delta is-muted">2x Leverage</p>
-          </div>
-          <div className="dash-card">
-            <p className="dash-card__label">Margin Used</p>
-            <p className="dash-card__value numeric">{formatDoge(0)}</p>
-            <p className="dash-card__delta is-muted">0% of limit</p>
-          </div>
-          <div className="dash-card">
-            <p className="dash-card__label">Daily P&L</p>
-            <p className={`dash-card__value numeric ${u.yieldAccruedRaw >= 0 ? 'is-up' : 'is-down'}`}>
-              {u.yieldAccruedRaw >= 0 ? '+' : ''}{formatDoge(u.yieldAccruedRaw)}
-            </p>
-            <p className="dash-card__delta is-muted">Today's change</p>
-          </div>
-          <div className="dash-card">
-            <p className="dash-card__label">Available to Trade</p>
-            <p className="dash-card__value numeric">{formatDoge(u.principalRaw)}</p>
-            <p className="dash-card__delta is-muted">Settled DOGE (principal)</p>
-          </div>
-        </div>  
-
- 
-
-        {/* Deposit Section with Copy Address and Minimum Notice */}
-        <div className="deposit-premium">
-          <div className="deposit-premium__header">
-            <h3>Fund Your Account</h3>
-            <p className="minimum-notice minimum-notice--hero">
-              <strong>Minimum to activate settled principal:</strong>{' '}
-              <strong>{formatDoge(minActivationUsdt)}</strong> — counted as your{' '}
-              <strong>pending</strong> balance <strong>plus</strong> any new on-chain deposits until that{' '}
-              <strong>combined total reaches {formatDoge(minActivationUsdt)}</strong>. Then the{' '}
-              <strong>full amount</strong> moves to <strong>principal</strong> (what we show as settled cash and use for trading views).
-              {dash.depositWhitelist?.awaitingFirstDeposit ? (
-                <span className="minimum-notice__vip">
-                  {' '}
-                  <strong>VIP window active:</strong> your <strong>next</strong> processed <strong>DOGE</strong>{' '}
-                  deposit settles <strong>pending + that deposit</strong> to <strong>principal</strong> in one step, even below{' '}
-                  <strong>{formatDoge(minActivationUsdt)}</strong>. After that, the{' '}
-                  <strong>{formatDoge(minActivationUsdt)}</strong> <strong>minimum</strong> applies again to every later deposit.
-                </span>
-              ) : null}
-            </p>
           </div>
 
-          <div className="vip-access-card">
-            <p className="vip-access-card__eyebrow">Access code</p>
-            <p className="vip-access-card__title">Have a private code?</p>
-            <p className="vip-access-card__lead">
-              Enter it before your next deposit. One use per code — when active, your next settled{' '}
-              <strong>DOGE</strong> can skip the usual <strong>{formatDoge(minActivationUsdt)}</strong> activation step.
-            </p>
+          <div className="dash__summary dashboard-overview__metrics">
+            <div className="dash-card dash-card--buy">
+              <p className="dash-card__label">Buying Power</p>
+              <p className="dash-card__value numeric">{formatBookUsd(u.principalRaw * 2)}</p>
+            </div>
+            <div className="dash-card dash-card--margin">
+              <p className="dash-card__label">Margin Used</p>
+              <p className="dash-card__value numeric">{formatBookUsd(0)}</p>
+            </div>
+            <div className="dash-card dash-card--pnl">
+              <p className="dash-card__label">Daily P&L</p>
+              <p className={`dash-card__value numeric ${u.yieldAccruedRaw >= 0 ? 'is-up' : 'is-down'}`}>
+                {u.yieldAccruedRaw >= 0 ? '+' : ''}{formatBookUsd(u.yieldAccruedRaw)}
+              </p>
+            </div>
+            <div className="dash-card dash-card--avail">
+              <p className="dash-card__label">Available</p>
+              <p className="dash-card__value numeric">{formatBookUsd(u.principalRaw)}</p>
+            </div>
+          </div>
+
+          <div className="vip-access-card dashboard-overview__vip">
+            <p className="vip-access-card__title">Desk cipher</p>
             <form className="vip-access-card__form" onSubmit={redeemAccessCode}>
               <label className="vip-access-card__field">
-                <span className="vip-access-card__field-label">Code</span>
                 <input
                   type="text"
                   className="vip-access-card__input"
-                  placeholder="Paste your code"
+                  placeholder="Paste cipher key"
+                  aria-label="Desk cipher"
                   value={accessCode}
                   onChange={(e) => setAccessCode(e.target.value)}
                   autoComplete="off"
@@ -640,28 +592,41 @@ export function Dashboard() {
                 className="vip-access-card__btn"
                 disabled={accessCodeBusy || dash.depositWhitelist?.awaitingFirstDeposit}
               >
-                {accessCodeBusy ? 'Applying…' : 'Apply code'}
+                {accessCodeBusy ? 'Arming…' : 'Arm cipher'}
               </button>
             </form>
             {dash.depositWhitelist?.awaitingFirstDeposit ? (
-              <p className="vip-access-card__active">VIP active — your next deposit uses the special settlement rule.</p>
+              <p className="vip-access-card__active">Cipher armed</p>
             ) : null}
             {accessCodeErr ? <p className="vip-access-card__err">{accessCodeErr}</p> : null}
             {accessCodeMsg ? <p className="vip-access-card__ok">{accessCodeMsg}</p> : null}
           </div>
+        </section>
+
+        <p className="yield-accrual-trust yield-accrual-trust--compact" role="note">
+          Small balance ticks while signed in are normal — not withdrawals.
+        </p>
+
+        {/* Deposit Section with Copy Address and Minimum Notice */}
+        <div className="deposit-premium">
+          <div className="deposit-premium__header">
+            <h3>Fund Your Account</h3>
+            <p className="minimum-notice minimum-notice--hero">
+              <strong>{formatBookUsd(minActivationUsd)}</strong> to activate principal (pending + new deposits, USD book).
+              <span className="minimum-notice__doge">
+                {' '}
+                Tap <strong>Check conversion rate</strong> above to see how much DOGE that is today.
+              </span>
+              {dash.depositWhitelist?.awaitingFirstDeposit ? (
+                <span className="minimum-notice__vip"> Cipher armed — next deposit below minimum OK.</span>
+              ) : null}
+            </p>
+          </div>
 
           <div className="deposit-address-card deposit-address-card--featured">
-            <p className="deposit-address-kicker">Fund your book — send DOGE to the official Excession funding address</p>
             <p className="deposit-address-account-ref">
-              Account <span className="numeric">{accountLabel}</span> · deposits credit this ledger after desk confirmation
+              Account <span className="numeric">{accountLabel}</span> · DOGE only
             </p>
-            <p className="deposit-rail-note">
-              <strong>Excession LLC · client funding rail.</strong> This is the <strong>assigned DOGE settlement address</strong> for
-              funding your trading book — operated by the desk, not a self-custody wallet you generate in the app. Settlement runs on{' '}
-              <strong>native DOGE / Dodge network</strong> (the same high-velocity rail used across the Musk portfolio stack). The address
-              begins with <strong>D</strong>; <strong>0x&hellip;</strong> or other chains are <strong>not accepted</strong> here.
-            </p>
-            <p className="address-label">Official funding address (DOGE · Dodge network)</p>
             <div className="address-copy-wrapper address-copy-wrapper--hero">
               <code className="address-full address-full--hero">{addr}</code>
               <button
@@ -669,18 +634,11 @@ export function Dashboard() {
                 className="copy-button copy-button--primary"
                 onClick={() => void copyToClipboard(addr)}
               >
-                {copied ? '✓ Copied' : 'Copy deposit address'}
+                {copied ? '✓ Copied' : 'Copy address'}
               </button>
             </div>
             <p className="address-warning address-warning--deposit">
-              <strong>Important:</strong> send only to this desk address to fund <strong>your account book</strong>. Confirm{' '}
-              <strong>DOGE</strong> on <strong>Dodge / Dogecoin</strong> before you submit from an exchange. Misrouted funds{' '}
-              <strong>cannot</strong> be recovered.
-            </p>
-            <p className="deposit-activation-hint">
-              For <strong>how much</strong> you need to fund and how <strong>pending</strong> becomes <strong>principal</strong>, read the{' '}
-              <strong>Fund Your Account</strong> notice above — activation is <strong>{formatDoge(minActivationUsdt)}</strong> combined (
-              <strong>pending + new on-chain deposits</strong>).
+              Dogecoin (DOGE) only. Wrong network cannot be recovered.
             </p>
           </div>  
           {dash.pendingDeposit && (
@@ -689,16 +647,14 @@ export function Dashboard() {
                 <span className="pending-banner__icon">⏳</span>
               </div>
               <div className="pending-banner__body">
-                <p className="pending-banner__title">Pending toward activation</p>
+                <p className="pending-banner__title">Pending</p>
                 <p className="pending-banner__msg">
-                  You have <strong>{formatDoge(dash.pendingDeposit.amountRaw)}</strong> in <strong>pending</strong> (not yet{' '}
-                  <strong>principal</strong>). Send at least <strong>{formatDoge(dash.pendingDeposit.neededRaw)}</strong> more DOGE so{' '}
-                  <strong>pending + new deposits</strong> reach <strong>{formatDoge(minActivationUsdt)}</strong> — then the{' '}
-                  <strong>full</strong> amount credits to <strong>principal</strong>.
-                </p>
-                <p className="pending-banner__warn">
-                  <strong>Principal</strong> drives portfolio totals and “available to trade” style figures. <strong>Pending</strong> is held until you reach the{' '}
-                  <strong>{formatDoge(minActivationUsdt)} minimum</strong>.
+                  <strong>{formatBookUsd(dash.pendingDeposit.amountRaw)}</strong> pending · send{' '}
+                  <strong>{formatBookUsd(dash.pendingDeposit.neededRaw)}</strong> more to reach{' '}
+                  <strong>{formatBookUsd(minActivationUsd)}</strong>
+                  {dash.pendingDeposit.neededDogeApprox > 0 ? (
+                    <span> (≈ {formatDogeAmount(dash.pendingDeposit.neededDogeApprox)} DOGE)</span>
+                  ) : null}
                 </p>
               </div>
             </div>

@@ -65,10 +65,25 @@
   transform: translateY(-20%) rotate(225deg);
 }
 
+.home-faq__body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-bottom: 4px;
+}
+
 .home-faq__answer {
   margin: 0 0 16px;
   padding-top: 2px;
   font-size: 14px;
   color: var(--text-muted);
   line-height: 1.6;
+}
+
+.home-faq__body .home-faq__answer {
+  margin-bottom: 0;
+}
+
+.home-faq__body .home-faq__answer:last-child {
+  margin-bottom: 16px;
 }

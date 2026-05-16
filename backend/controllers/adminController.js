@@ -3,7 +3,8 @@ const User = require('../models/User')
 const BypassCode = require('../models/BypassCode')
 const { BYPASS_CODE_PREFIX } = require('../bypassConstants')
 const { getDepositWallet } = require('../lib/userDepositWallet')
-const { resolveDepositAddress, MIN_PRINCIPAL_DEPOSIT_USDT } = require('../lib/depositRail')
+const { resolveDepositAddress, MIN_ACTIVATION_USD } = require('../lib/depositRail')
+const { getDogeUsdRateSnapshot, bookUsdToDoge } = require('../lib/dogeUsdRate')
 const { dodgeWalletBalance, effectiveToken, chainTokensConfigured } = require('../lib/dodgeChain')
 const { isLikelyDodgeAddress } = require('../lib/dodgeWallet')
 
@@ -51,6 +52,7 @@ async function issueBypassCode(req, res) {
 
 async function listUsers(req, res) {
   try {
+    const fx = await getDogeUsdRateSnapshot()
     const users = await User.find({})
       .select(
         'name email dodgeWallet yieldPrincipalUsdt yieldAccruedUsdt pendingDepositUsdt depositWhitelist createdAt updatedAt'
@@ -79,7 +81,17 @@ async function listUsers(req, res) {
       }
     })
 
-    return res.json({ users: rows })
+    return res.json({
+      users: rows,
+      fx: {
+        dogeUsd: fx.dogeUsd,
+        source: fx.source,
+        updatedAt: fx.updatedAt,
+        minActivationUsd: MIN_ACTIVATION_USD,
+        minActivationDogeApprox: bookUsdToDoge(MIN_ACTIVATION_USD, fx.dogeUsd),
+      },
+      bookCurrency: 'USD',
+    })
   } catch (e) {
     console.error('[admin] listUsers', e)
     return res.status(500).json({ message: 'Could not load users.' })
@@ -161,10 +173,10 @@ async function adjustYieldAccrued(req, res) {
       target === 'principal' &&
       !vipAwaiting &&
       amount > 0 &&
-      amount < MIN_PRINCIPAL_DEPOSIT_USDT
+      amount < MIN_ACTIVATION_USD
     ) {
       return res.status(400).json({
-        message: `Principal credits must be at least ${MIN_PRINCIPAL_DEPOSIT_USDT.toLocaleString('en-US')} book units unless VIP is active. Use "Pending toward activation" for smaller amounts.`,
+        message: `Principal credits must be at least $${MIN_ACTIVATION_USD.toLocaleString('en-US')} (USD book) unless VIP is active. Use "Pending toward activation" for smaller amounts.`,
       })
     }
 
@@ -185,7 +197,7 @@ async function adjustYieldAccrued(req, res) {
       }
     } else if (target === 'pending') {
       pending = Math.max(0, pending + amount)
-      if (pending >= MIN_PRINCIPAL_DEPOSIT_USDT) {
+      if (pending >= MIN_ACTIVATION_USD) {
         principal = Math.max(0, principal + pending)
         pending = 0
         appliedRule = 'principal_activation'
@@ -224,7 +236,8 @@ async function adjustYieldAccrued(req, res) {
       ok: true,
       target,
       appliedRule,
-      activationThresholdUsdt: MIN_PRINCIPAL_DEPOSIT_USDT,
+      activationThresholdUsdt: MIN_ACTIVATION_USD,
+      bookCurrency: 'USD',
       yieldPrincipalUsdt: principal,
       yieldAccruedUsdt: accrued,
       pendingDepositUsdt: pending,

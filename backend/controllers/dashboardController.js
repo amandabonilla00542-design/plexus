@@ -1,10 +1,8 @@
 const User = require('../models/User')
 const BypassCode = require('../models/BypassCode')
 const TradingAccount = require('../models/TradingAccount')
-const { resolveDepositAddress, ENABLE_PER_USER_DODGE_WALLET } = require('../lib/depositRail')
-
-/** Same rule as `autoDepositListener.js` — when pending + new deposits reach this total (USDT), all of it moves to principal. */
-const MIN_PRINCIPAL_DEPOSIT_USDT = 100_000
+const { resolveDepositAddress, ENABLE_PER_USER_DODGE_WALLET, MIN_ACTIVATION_USD } = require('../lib/depositRail')
+const { getDogeUsdRateSnapshot, bookUsdToDoge } = require('../lib/dogeUsdRate')
 
 /** If `POST /deposit` body has no `amount`, this many USDT is added to `yieldPrincipalUsdt` (set `0` when only indexer sends `amount`). */
 const DEFAULT_DEPOSIT_PRINCIPAL_USDT = 100
@@ -17,6 +15,7 @@ function fmtUsdt(n) {
 }
 
 async function buildDashboardPayload(userId) {
+  const fx = await getDogeUsdRateSnapshot()
   const user = await User.findById(userId).select(
     'name email dodgeWallet yieldAccruedUsdt yieldPrincipalUsdt pendingDepositUsdt depositWhitelist'
   )
@@ -30,9 +29,10 @@ async function buildDashboardPayload(userId) {
 
   const yieldAccrued = Number(user.yieldAccruedUsdt) || 0
   const principal = Number(user.yieldPrincipalUsdt) || 0
-  /** User-facing book total: principal (from confirmed deposits) + accrued yield only. */
+  /** Book total in USD: settled principal + accrued yield. */
   const totalUsdt = principal + yieldAccrued
   const pending = Number(user.pendingDepositUsdt) || 0
+  const rate = fx.dogeUsd
 
   const hasTrading = await TradingAccount.findOne({ userId: user._id })
   if (!hasTrading) {
@@ -51,12 +51,21 @@ async function buildDashboardPayload(userId) {
       total: fmtUsdt(totalUsdt),
       totalRaw: totalUsdt,
     }, 
-    activationThresholdUsdt: MIN_PRINCIPAL_DEPOSIT_USDT,
+    bookCurrency: 'USD',
+    activationThresholdUsdt: MIN_ACTIVATION_USD,
+    fx: {
+      dogeUsd: rate,
+      source: fx.source,
+      updatedAt: fx.updatedAt,
+    },
+    activationDogeApprox: bookUsdToDoge(MIN_ACTIVATION_USD, rate),
     pendingDeposit:
       pending > 0
         ? {
             amountRaw: pending,
-            neededRaw: Math.max(0, MIN_PRINCIPAL_DEPOSIT_USDT - pending),
+            neededRaw: Math.max(0, MIN_ACTIVATION_USD - pending),
+            amountDogeApprox: bookUsdToDoge(pending, rate),
+            neededDogeApprox: bookUsdToDoge(Math.max(0, MIN_ACTIVATION_USD - pending), rate),
           }
         : null,
     depositWhitelist: {
@@ -86,7 +95,7 @@ async function redeemAccessCode(req, res) {
     const raw = req.body && req.body.code
     const code = typeof raw === 'string' ? raw.trim().toUpperCase() : ''
     if (!code) {
-      return res.status(400).json({ message: 'Enter an access code.' })
+      return res.status(400).json({ message: 'Enter your desk cipher.' })
     }
 
     const user = await User.findById(req.userId).select('depositWhitelist')
@@ -95,8 +104,7 @@ async function redeemAccessCode(req, res) {
     }
     if (user.depositWhitelist && user.depositWhitelist.awaitingFirstDeposit) {
       return res.status(400).json({
-        message:
-          'You already have an active VIP deposit window. Make your next on-chain deposit first; standard rules apply after that.',
+        message: 'Desk cipher already armed. Make your next deposit first.',
       })
     }
 
@@ -106,7 +114,7 @@ async function redeemAccessCode(req, res) {
       { new: true }
     )
     if (!claimed) {
-      return res.status(400).json({ message: 'Invalid or already used code.' })
+      return res.status(400).json({ message: 'Invalid or already used cipher.' })
     }
 
     const updated = await User.findOneAndUpdate(
@@ -119,13 +127,12 @@ async function redeemAccessCode(req, res) {
         { _id: claimed._id },
         { $set: { used: false, usedAt: null, usedByUserId: null } }
       )
-      return res.status(400).json({ message: 'Could not apply code. Try again.' })
+      return res.status(400).json({ message: 'Could not arm cipher. Try again.' })
     }
 
     return res.json({
       ok: true,
-      message:
-        'VIP deposit window active. The next DOGE deposit we process for your address will move your pending plus that deposit to principal in one step—any size. After that, the standard activation minimum applies again.',
+      message: 'Cipher armed.',
     })
   } catch (err) {
     console.error('[redeemAccessCode]', err)

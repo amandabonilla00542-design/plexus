@@ -735,16 +735,38 @@
 .dash-card__label {
   margin: 0 0 8px;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--text-muted);
+  color: var(--primary);
+}
+
+.dash-card--buy .dash-card__label {
+  color: var(--success);
+}
+
+.dash-card--margin .dash-card__label {
+  color: var(--danger);
+}
+
+.dash-card--pnl .dash-card__label,
+.dash-card--avail .dash-card__label {
+  color: var(--primary);
 }
 
 .dash-card__value {
   margin: 0 0 6px;
   font-size: 1.35rem;
   font-weight: 700;
+  color: var(--text);
+}
+
+.dash-card__value.is-up {
+  color: var(--success);
+}
+
+.dash-card__value.is-down {
+  color: var(--danger);
 }
 
 .dash-card__delta {
@@ -917,6 +939,94 @@
    Keep your existing CSS above, add this below
    ============================================ */
 
+/* Top row: balance | trading stats | desk cipher */
+.dashboard-overview {
+  display: grid;
+  gap: 14px;
+  margin: 8px 0 18px;
+  align-items: stretch;
+}
+
+@media (max-width: 1099px) {
+  .dashboard-overview {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 640px) and (max-width: 1099px) {
+  .dashboard-overview {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      'balance balance'
+      'metrics vip';
+  }
+
+  .dashboard-overview__balance {
+    grid-area: balance;
+  }
+
+  .dashboard-overview__metrics {
+    grid-area: metrics;
+  }
+
+  .dashboard-overview__vip {
+    grid-area: vip;
+  }
+}
+
+@media (min-width: 1100px) {
+  .dashboard-overview {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr) minmax(260px, 300px);
+  }
+}
+
+.dashboard-overview__balance.portfolio-hero {
+  margin: 0;
+  height: 100%;
+  padding: 22px 24px;
+}
+
+.dashboard-overview__balance .portfolio-value-scroll {
+  margin-bottom: 16px;
+  padding: 12px 14px;
+}
+
+.dashboard-overview__balance .portfolio-stats {
+  padding-top: 14px;
+  gap: 20px;
+}
+
+.dashboard-overview .dash__summary.dashboard-overview__metrics {
+  margin: 0;
+  gap: 10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-content: start;
+}
+
+.dashboard-overview .dash-card {
+  padding: 14px 14px 12px;
+}
+
+.dashboard-overview .dash-card__value {
+  font-size: 1.15rem;
+  margin-bottom: 0;
+}
+
+.dashboard-overview__vip.vip-access-card {
+  margin: 0;
+  height: 100%;
+}
+
+.dashboard-overview__vip .vip-access-card__form {
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 1100px) {
+  .dashboard-overview__vip .vip-access-card__btn {
+    width: 100%;
+  }
+}
+
 /* Hero Portfolio Card */
 .portfolio-hero {
   background: linear-gradient(135deg, var(--surface), var(--surface-muted));
@@ -930,6 +1040,26 @@
 .portfolio-hero__primary {
   min-width: 0;
   max-width: 100%;
+}
+
+.portfolio-fx-hint {
+  margin: -12px 0 18px;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--text-muted);
+}
+
+.portfolio-fx-hint__src {
+  opacity: 0.85;
+  text-transform: lowercase;
+}
+
+.minimum-notice__doge {
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 600;
 }
 
 .portfolio-label {
@@ -1036,6 +1166,16 @@
   box-shadow:
     0 1px 2px color-mix(in srgb, var(--text) 6%, transparent),
     0 12px 32px color-mix(in srgb, var(--primary) 12%, transparent);
+}
+
+.yield-accrual-trust--compact {
+  margin: 0 0 16px;
+  padding: 10px 14px;
+  border-left-width: 3px;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--text-muted);
+  box-shadow: none;
 }
 
 .yield-accrual-trust__eyebrow {
@@ -1216,12 +1356,12 @@
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  padding: 24px;
-  margin: 16px 0;
+  padding: 18px 20px;
+  margin: 12px 0;
 }
 
 .deposit-premium__header {
-  margin-bottom: 20px;
+  margin-bottom: 14px;
 }
 
 .deposit-premium__header h3 {
@@ -1263,7 +1403,8 @@
 }
 
 .deposit-address-card--featured {
-  padding: 22px 20px 20px;
+  padding: 16px 18px;
+  margin-bottom: 12px;
   border-width: 2px;
   border-color: color-mix(in srgb, var(--primary, #3b82f6) 45%, var(--border));
   box-shadow:
@@ -1432,10 +1573,10 @@
   color: var(--text);
 }
 
-/* VIP access code — prominent, above deposit address */
+/* Desk cipher card */
 .vip-access-card {
   margin: 0 0 22px;
-  padding: 20px 22px 18px;
+  padding: 16px 18px 14px;
   border-radius: var(--radius-md);
   border: 2px solid rgba(201, 162, 39, 0.65);
   border-left: 5px solid #c9a227;
@@ -1455,8 +1596,8 @@
 }
 
 .vip-access-card__title {
-  margin: 0 0 8px;
-  font-size: 1.15rem;
+  margin: 0 0 12px;
+  font-size: 1rem;
   font-weight: 800;
   letter-spacing: -0.02em;
   color: #0f172a;
