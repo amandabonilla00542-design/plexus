@@ -37,6 +37,13 @@
   color: var(--text-muted);
 }
 
+.auth-code-input {
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 1.35rem;
+  letter-spacing: 0.35em;
+  text-align: center;
+}
+
 .auth-card__lead {
   margin: -8px 0 20px;
   font-size: 14px;

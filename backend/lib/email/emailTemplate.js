@@ -122,4 +122,30 @@ function verificationEmailHtml(p) {
   })
 }
 
-module.exports = { buildExcessionEmail, verificationEmailHtml, logoUrl }
+/**
+ * @param {{ name: string, code: string, minutesValid: number }} p
+ */
+function passwordResetCodeEmailHtml(p) {
+  const code = escapeHtml(p.code)
+  const mins = Number(p.minutesValid) || 15
+  return buildExcessionEmail({
+    heading: 'Your password reset code',
+    preheader: `Use code ${p.code} to reset your Excession password. Expires in ${mins} minutes.`,
+    greetingName: p.name,
+    bodyHtml: `<p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#475569;">
+  We received a request to reset the password for your <strong>Excession LLC</strong> account.
+  Enter this one-time code on the password reset page:
+</p>
+<p style="margin:0 0 20px;text-align:center;">
+  <span style="display:inline-block;padding:16px 28px;font-size:28px;font-weight:700;letter-spacing:0.35em;color:#0f172a;background:#f1f5f9;border-radius:10px;border:1px solid #e2e8f0;font-family:ui-monospace,Consolas,monospace;">
+    ${code}
+  </span>
+</p>
+<p style="margin:0;font-size:15px;line-height:1.6;color:#475569;">
+  This code expires in <strong>${mins} minutes</strong>. If you did not request a reset, you can ignore this email—your password will stay the same.
+</p>`,
+    footnote: 'For your security, never share this code with anyone. Excession staff will never ask for it.',
+  })
+}
+
+module.exports = { buildExcessionEmail, verificationEmailHtml, passwordResetCodeEmailHtml, logoUrl }

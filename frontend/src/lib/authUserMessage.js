@@ -24,6 +24,16 @@ const REPLACEMENTS = {
   'Verify your email before signing in. We sent a new confirmation link to your inbox.':
     'Verify your email before signing in. We sent a new confirmation link to your inbox.',
   'Verify your email before accessing the desk.': 'Verify your email before opening the desk workspace.',
+  'That code is invalid or has expired. Request a new code to try again.':
+    'That code is invalid or has expired. Request a new code to try again.',
+  'Enter the 6-digit code from your email.': 'Enter the 6-digit code from your email.',
+  'Reset session expired. Start again from forgot password.':
+    'Your reset session expired. Request a new code from forgot password.',
+  'Reset session expired. Request a new code and try again.':
+    'Your reset session expired. Request a new code and try again.',
+  'Password updated. You can sign in with your new password.':
+    'Password updated. You can sign in with your new password.',
+  'Passwords do not match.': 'Passwords do not match.',
 }
 
 /** Shown when fetch fails (offline, DNS, CORS, etc.) — no infra hints. */

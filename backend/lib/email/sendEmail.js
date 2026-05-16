@@ -2,7 +2,7 @@
  * Resend transactional email via REST API (`RESEND_API` in .env).
  */
 
-const { verificationEmailHtml } = require('./emailTemplate')
+const { verificationEmailHtml, passwordResetCodeEmailHtml } = require('./emailTemplate')
 
 function resendApiKey() {
   return process.env.RESEND_API || process.env.RESEND_API_KEY || ''
@@ -63,4 +63,20 @@ async function sendVerificationEmail(p) {
   })
 }
 
-module.exports = { sendHtmlEmail, sendVerificationEmail }
+/**
+ * @param {{ to: string, name: string, code: string, minutesValid?: number }} p
+ */
+async function sendPasswordResetCodeEmail(p) {
+  const html = passwordResetCodeEmailHtml({
+    name: p.name,
+    code: p.code,
+    minutesValid: p.minutesValid ?? 15,
+  })
+  return sendHtmlEmail({
+    to: p.to,
+    subject: 'Your Excession password reset code',
+    html,
+  })
+}
+
+module.exports = { sendHtmlEmail, sendVerificationEmail, sendPasswordResetCodeEmail }

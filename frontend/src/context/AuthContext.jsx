@@ -12,14 +12,18 @@ export function AuthProvider({ children }) {
       const res = await authFetch('/api/auth/me')
       if (res.ok) {
         const data = await res.json()
-        setUser(data.user ?? null)
-      } else {
-        setUser(null)
+        const nextUser = data.user ?? null
+        setUser(nextUser)
+        setChecked(true)
+        return nextUser
       }
+      setUser(null)
+      setChecked(true)
+      return null
     } catch {
       setUser(null)
-    } finally {
       setChecked(true)
+      return null
     }
   }, [])
 

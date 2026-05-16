@@ -5,6 +5,8 @@ const {
   logout,
   me,
   forgotPassword,
+  verifyPasswordResetCode,
+  resetPassword,
   verifyEmail,
   resendVerification,
 } = require('../controllers/authController')
@@ -18,6 +20,8 @@ router.get('/verify-email', verifyEmail)
 router.post('/verify-email', verifyEmail)
 router.post('/resend-verification', resendVerification)
 router.post('/forgot-password', forgotPassword)
+router.post('/verify-password-reset-code', verifyPasswordResetCode)
+router.post('/reset-password', resetPassword)
 router.post('/logout', logout)
 router.get('/me', requireAuth, me)
 

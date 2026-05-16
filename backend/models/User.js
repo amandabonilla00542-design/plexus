@@ -7,6 +7,12 @@ const userSchema = new mongoose.Schema(
     passwordHash: { type: String, required: true },
     /** Must be true before dashboard / desk APIs are available. */
     emailVerified: { type: Boolean, default: false },
+    /** Hashed 6-digit code for forgot-password (never store plaintext). */
+    passwordReset: {
+      codeHash: { type: String },
+      expiresAt: { type: Date },
+      attempts: { type: Number, default: 0 },
+    },
     /** On-chain deposit rail — Dogecoin on the Dodge network (D… address). */
     dodgeWallet: {
       address: { type: String, sparse: true, unique: true },

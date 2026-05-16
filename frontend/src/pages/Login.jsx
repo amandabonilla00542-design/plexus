@@ -5,6 +5,53 @@ import { AUTH_NETWORK_MESSAGE, messageFromAuthResponse } from '../lib/authUserMe
 import { useAuth } from '../context/AuthContext'
 import './AuthPage.css'
 
+/**
+ * LOGIN FLOW (start here when user clicks "Sign in")
+ *
+ * App.jsx wraps this page in <GuestRoute>:
+ *   → On load, AuthContext already called GET /api/auth/me
+ *   → If user.verified === true → GuestRoute redirects to /dashboard (skip login form)
+ *
+ * Click "Sign in" → runLoginFlow() below:
+ *   1. POST /api/auth/login          (backend checks password + emailVerified)
+ *   2. On failure → show error (403 = email not verified + resend button)
+ *   3. On success → save JWT in localStorage + httpOnly cookie from server
+ *   4. refresh() → GET /api/auth/me  (load { name, email, verified } into AuthContext)
+ *   5. If verified → navigate('/dashboard')
+ *      → ProtectedRoute checks user again, then Dashboard calls GET /api/dashboard
+ */
+
+/** Step 1 — credentials to backend */
+async function postLogin(email, password) {
+  const res = await authFetch('/api/auth/login', {
+    method: 'POST',
+    body: { email, password },
+  })
+  const data = await res.json().catch(() => ({}))
+  return { res, data }
+}
+
+/** Step 3 — keep token for Bearer header on API calls */
+function saveSessionToken(token) {
+  if (!token) return
+  try {
+    window.localStorage.setItem(AUTH_TOKEN_KEY, token)
+  } catch {
+    /* private mode / quota */
+  }
+}
+
+/** Step 4 — AuthContext → GET /api/auth/me */
+async function resendVerificationEmail(email) {
+  const res = await authFetch('/api/auth/resend-verification', {
+    method: 'POST',
+    body: { email },
+  })
+  const data = await res.json().catch(() => ({}))
+  if (res.ok && typeof data.message === 'string') return data.message
+  return 'Could not resend right now. Try again shortly.'
+}
+
 export function Login() {
   const navigate = useNavigate()
   const location = useLocation()
@@ -18,6 +65,41 @@ export function Login() {
   const [loading, setLoading] = useState(false)
   const [resendEmail, setResendEmail] = useState('')
   const [resendNote, setResendNote] = useState('')
+
+  async function runLoginFlow(email, password) {
+    setError(null)
+    setInfo(null)
+    setResendEmail('')
+    setResendNote('')
+
+    // ── Step 1: POST /api/auth/login ──────────────────────────────────────
+    const { res, data } = await postLogin(email, password)
+
+    // ── Step 2: handle errors (stay on /login) ────────────────────────────
+    if (!res.ok) {
+      if (data?.code === 'EMAIL_NOT_VERIFIED') {
+        setResendEmail(email)
+      }
+      setError(messageFromAuthResponse(res, data))
+      return
+    }
+
+    // ── Step 3: persist session token ─────────────────────────────────────
+    saveSessionToken(data.token)
+
+    // ── Step 4: load user into AuthContext (GET /api/auth/me) ─────────────
+    const user = await refresh()
+
+    // ── Step 5: only enter desk if verified ─────────────────────────────────
+    if (!user?.verified) {
+      setError('Verify your email before opening the desk. Check your inbox for the confirmation link.')
+      setResendEmail(email)
+      return
+    }
+
+    // ── Step 6: go to dashboard (ProtectedRoute + API check again) ────────
+    navigate('/dashboard', { replace: true })
+  }
 
   return (
     <div className="auth-page">
@@ -33,29 +115,12 @@ export function Login() {
           className="auth-form"
           onSubmit={async (e) => {
             e.preventDefault()
-            setError(null)
             const form = e.currentTarget
             const email = form.email.value.trim()
             const password = form.password.value
             setLoading(true)
             try {
-              const res = await authFetch('/api/auth/login', {
-                method: 'POST',
-                body: { email, password },
-              })
-              const data = await res.json().catch(() => ({}))
-              if (!res.ok) {
-                if (data?.code === 'EMAIL_NOT_VERIFIED') {
-                  setResendEmail(email)
-                }
-                setError(messageFromAuthResponse(res, data))
-                return
-              }
-              if (data.token) {
-                window.localStorage.setItem(AUTH_TOKEN_KEY, data.token)
-              }
-              await refresh()
-              navigate('/dashboard', { replace: true })
+              await runLoginFlow(email, password)
             } catch {
               setError(AUTH_NETWORK_MESSAGE)
             } finally {
@@ -78,21 +143,16 @@ export function Login() {
               <button
                 type="button"
                 className="btn btn--ghost"
+                disabled={loading}
                 onClick={async () => {
                   setResendNote('')
+                  setLoading(true)
                   try {
-                    const res = await authFetch('/api/auth/resend-verification', {
-                      method: 'POST',
-                      body: { email: resendEmail },
-                    })
-                    const data = await res.json().catch(() => ({}))
-                    setResendNote(
-                      res.ok && typeof data.message === 'string'
-                        ? data.message
-                        : 'Could not resend right now. Try again shortly.',
-                    )
+                    setResendNote(await resendVerificationEmail(resendEmail))
                   } catch {
                     setResendNote(AUTH_NETWORK_MESSAGE)
+                  } finally {
+                    setLoading(false)
                   }
                 }}
               >
