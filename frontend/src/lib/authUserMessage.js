@@ -21,6 +21,9 @@ const REPLACEMENTS = {
   'Server error during login.': 'We couldn’t sign you in. Please try again shortly.',
   'Server error.': 'Something went wrong. Please try again shortly.',
   'User not found.': 'Your session expired. Please sign in again.',
+  'Verify your email before signing in. We sent a new confirmation link to your inbox.':
+    'Verify your email before signing in. We sent a new confirmation link to your inbox.',
+  'Verify your email before accessing the desk.': 'Verify your email before opening the desk workspace.',
 }
 
 /** Shown when fetch fails (offline, DNS, CORS, etc.) — no infra hints. */
@@ -42,6 +45,9 @@ export function messageFromAuthResponse(res, data) {
     return raw
   }
 
+  if (status === 403 && data?.code === 'EMAIL_NOT_VERIFIED') {
+    return REPLACEMENTS[raw] || 'Verify your email before signing in. Check your inbox for the confirmation link.'
+  }
   if (status === 401) {
     return 'The email or password does not match our records.'
   }

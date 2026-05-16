@@ -1,23 +1,40 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { AUTH_TOKEN_KEY, authFetch } from '../api/client'
+import { authFetch } from '../api/client'
 import { AUTH_NETWORK_MESSAGE, messageFromAuthResponse } from '../lib/authUserMessage'
-import { useAuth } from '../context/AuthContext'
 import './AuthPage.css'
 
-const POST_SIGNUP_MS = 8_000
-
-function delay(ms) {
-  return new Promise((resolve) => {
-    window.setTimeout(resolve, ms)
-  })
-}
-
 export function Signup() {
-  const { refresh } = useAuth()
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(false)
-  const [processingSignup, setProcessingSignup] = useState(false)
+  const [pendingEmail, setPendingEmail] = useState(null)
+
+  if (pendingEmail) {
+    return (
+      <div className="auth-page">
+        <div className="auth-card">
+          <div className="auth-card__brand">
+            <Link to="/" className="auth-card__logo">
+              Excession LLC
+            </Link>
+            <p className="auth-card__hint">Almost there</p>
+          </div>
+          <h1 className="auth-card__title">Check your email</h1>
+          <p className="auth-card__hint">
+            We sent a verification link to <strong>{pendingEmail}</strong>. Open it to confirm your address,
+            then sign in to open your desk workspace.
+          </p>
+          <p className="auth-card__hint" style={{ marginTop: '1rem' }}>
+            The link expires in 24 hours. Check spam if you do not see it within a few minutes.
+          </p>
+          <ResendVerification email={pendingEmail} />
+          <p className="auth-footer" style={{ marginTop: '1.5rem' }}>
+            <Link to="/login">Back to sign in</Link>
+          </p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="auth-page">
@@ -54,21 +71,7 @@ export function Signup() {
                 setError(messageFromAuthResponse(res, data))
                 return
               }
-              if (data.token) {
-                window.localStorage.setItem(AUTH_TOKEN_KEY, data.token)
-              }
-              setLoading(false)
-              setProcessingSignup(true)
-              try {
-                /** Must run *before* `refresh()`: once `user` is set, `GuestRoute` immediately `<Navigate to="/dashboard" />` and skips the rest of this handler. */
-                await delay(POST_SIGNUP_MS)
-                await refresh()
-              } catch {
-                setProcessingSignup(false)
-                setError(
-                  'Your account may be ready. Please sign in with your email and password — or try again in a moment.',
-                )
-              }
+              setPendingEmail(email)
             } catch {
               setError(AUTH_NETWORK_MESSAGE)
             } finally {
@@ -104,7 +107,7 @@ export function Signup() {
               placeholder="Re-enter your password"
             />
           </label>
-          <button type="submit" className="btn btn--primary auth-submit" disabled={loading || processingSignup}>
+          <button type="submit" className="btn btn--primary auth-submit" disabled={loading}>
             {loading ? 'Creating…' : 'Continue'}
           </button>
         </form>
@@ -112,25 +115,48 @@ export function Signup() {
           Already have an account? <Link to="/login">Sign in</Link>
         </p>
       </div>
+    </div>
+  )
+}
 
-      {processingSignup ? (
-        <div
-          className="auth-processing-overlay"
-          role="alertdialog"
-          aria-modal="true"
-          aria-labelledby="auth-processing-title"
-          aria-busy="true"
-        >
-          <div className="auth-processing-card">
-            <div className="auth-processing-spinner" aria-hidden />
-            <p id="auth-processing-title" className="auth-processing-title">
-              Setting up your workspace
-            </p>
-            <p className="auth-processing-sub">
-              Opening your <strong>Excession</strong> trading workspace…
-            </p>
-          </div>
-        </div>
+function ResendVerification({ email }) {
+  const [status, setStatus] = useState('idle')
+  const [note, setNote] = useState('')
+
+  return (
+    <div style={{ marginTop: '1.25rem' }}>
+      <button
+        type="button"
+        className="btn btn--ghost"
+        disabled={status === 'sending'}
+        onClick={async () => {
+          setStatus('sending')
+          setNote('')
+          try {
+            const res = await authFetch('/api/auth/resend-verification', {
+              method: 'POST',
+              body: { email },
+            })
+            const data = await res.json().catch(() => ({}))
+            if (res.ok) {
+              setStatus('sent')
+              setNote(typeof data.message === 'string' ? data.message : 'If eligible, we sent another link.')
+            } else {
+              setStatus('idle')
+              setNote('Could not resend right now. Try again shortly.')
+            }
+          } catch {
+            setStatus('idle')
+            setNote(AUTH_NETWORK_MESSAGE)
+          }
+        }}
+      >
+        {status === 'sending' ? 'Sending…' : 'Resend verification email'}
+      </button>
+      {note ? (
+        <p className="auth-card__hint" style={{ marginTop: '0.75rem' }}>
+          {note}
+        </p>
       ) : null}
     </div>
   )

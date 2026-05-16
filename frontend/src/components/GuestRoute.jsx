@@ -13,7 +13,7 @@ export function GuestRoute({ children }) {
     )
   }
 
-  if (user) {
+  if (user?.verified) {
     return <Navigate to="/dashboard" replace />
   }
 

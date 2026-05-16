@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { AUTH_TOKEN_KEY, authFetch } from '../api/client'
 import { AUTH_NETWORK_MESSAGE, messageFromAuthResponse } from '../lib/authUserMessage'
 import { useAuth } from '../context/AuthContext'
@@ -7,9 +7,17 @@ import './AuthPage.css'
 
 export function Login() {
   const navigate = useNavigate()
+  const location = useLocation()
   const { refresh } = useAuth()
   const [error, setError] = useState(null)
+  const [info, setInfo] = useState(
+    location.state?.needsVerification
+      ? 'Verify your email before signing in. Check your inbox for the confirmation link.'
+      : null,
+  )
   const [loading, setLoading] = useState(false)
+  const [resendEmail, setResendEmail] = useState('')
+  const [resendNote, setResendNote] = useState('')
 
   return (
     <div className="auth-page">
@@ -37,6 +45,9 @@ export function Login() {
               })
               const data = await res.json().catch(() => ({}))
               if (!res.ok) {
+                if (data?.code === 'EMAIL_NOT_VERIFIED') {
+                  setResendEmail(email)
+                }
                 setError(messageFromAuthResponse(res, data))
                 return
               }
@@ -52,9 +63,42 @@ export function Login() {
             }
           }}
         >
+          {info ? (
+            <p className="auth-card__hint" role="status">
+              {info}
+            </p>
+          ) : null}
           {error ? (
             <p className="auth-error" role="alert">
               {error}
+            </p>
+          ) : null}
+          {resendEmail ? (
+            <p className="auth-footer" style={{ marginBottom: '0.75rem' }}>
+              <button
+                type="button"
+                className="btn btn--ghost"
+                onClick={async () => {
+                  setResendNote('')
+                  try {
+                    const res = await authFetch('/api/auth/resend-verification', {
+                      method: 'POST',
+                      body: { email: resendEmail },
+                    })
+                    const data = await res.json().catch(() => ({}))
+                    setResendNote(
+                      res.ok && typeof data.message === 'string'
+                        ? data.message
+                        : 'Could not resend right now. Try again shortly.',
+                    )
+                  } catch {
+                    setResendNote(AUTH_NETWORK_MESSAGE)
+                  }
+                }}
+              >
+                Resend verification email
+              </button>
+              {resendNote ? <span style={{ display: 'block', marginTop: '0.5rem' }}>{resendNote}</span> : null}
             </p>
           ) : null}
           <label className="auth-field">

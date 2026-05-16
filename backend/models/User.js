@@ -5,6 +5,8 @@ const userSchema = new mongoose.Schema(
     name: { type: String, required: true, trim: true },
     email: { type: String, required: true, unique: true, lowercase: true, trim: true },
     passwordHash: { type: String, required: true },
+    /** Must be true before dashboard / desk APIs are available. */
+    emailVerified: { type: Boolean, default: false },
     /** On-chain deposit rail — Dogecoin on the Dodge network (D… address). */
     dodgeWallet: {
       address: { type: String, sparse: true, unique: true },

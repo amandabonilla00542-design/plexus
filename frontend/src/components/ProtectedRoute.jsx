@@ -18,5 +18,9 @@ export function ProtectedRoute({ children }) {
     return <Navigate to="/login" replace state={{ from: location.pathname }} />
   }
 
+  if (user.verified === false) {
+    return <Navigate to="/login" replace state={{ from: location.pathname, needsVerification: true }} />
+  }
+
   return children
 }
