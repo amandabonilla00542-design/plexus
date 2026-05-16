@@ -26,11 +26,11 @@ async function fetchLiveRate() {
     signal: AbortSignal.timeout(10_000),
   })
   if (res.status === 429) {
-    const err = new Error('CoinGecko rate limit (429)')
+    const err = new Error('Error rate limit')
     err.code = 'RATE_LIMIT'
     throw err
   }
-  if (!res.ok) throw new Error(`CoinGecko ${res.status}`)
+  if (!res.ok) throw new Error(`Error${res.status}`)
   const data = await res.json()
   const r = Number(data?.dogecoin?.usd)
   if (!Number.isFinite(r) || r <= 0) throw new Error('invalid DOGE/USD from CoinGecko')
