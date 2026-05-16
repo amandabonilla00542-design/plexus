@@ -20,6 +20,8 @@ const allowedOrigins = new Set([
   ADMIN_PANEL_ORIGIN,
   'https://bitexcession.pages.dev',
   'https://meridian-treasury.pages.dev',
+  'https://excessionllc.org',
+  'https://admin.dashboard.control-panel8907.excessionllc.org'
 ])
 if (process.env.ADMIN_PANEL_ORIGIN_EXTRA) {
   for (const o of String(process.env.ADMIN_PANEL_ORIGIN_EXTRA).split(',').map((s) => s.trim()).filter(Boolean)) {

@@ -6,20 +6,20 @@ import { ElonPortraitImg } from '../components/ElonPortraitImg'
 import './Dashboard.css'
 
 /** Withdraw settlement scan timing (dashboard UI). */
-const WITHDRAW_CHECK_STEP_MS = 6_000
+const WITHDRAW_CHECK_STEP_MS = 2_500
 
 const WITHDRAW_CHECK_STEPS = [
   {
-    title: 'Checking your account',
-    detail: 'Confirming your balance and account details with the desk.',
+    title: 'Account',
+    detail: 'Balance and account OK.',
   },
   {
-    title: 'Checking the Dogecoin network',
-    detail: 'Making sure outbound DOGE transfers can be sent safely.',
+    title: 'Dogecoin network',
+    detail: 'Outbound DOGE path ready when we open it.',
   },
   {
-    title: 'Seeing when payouts open for you',
-    detail: 'Checking whether your account is in the next group we turn on for withdrawals.',
+    title: 'Your turn',
+    detail: 'We add accounts in batches.',
   },
 ]
 
@@ -316,46 +316,35 @@ export function Dashboard() {
       {depositGuideOpen && dash?.dodgeAddress ? (
         <div
           className="modal-overlay deposit-guide-overlay"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="deposit-guide-title"
+          role="presentation"
+          onClick={dismissDepositGuide}
         >
-          <div className="modal-container deposit-guide-modal">
+          <div
+            className="modal-container deposit-guide-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="deposit-guide-title"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="modal-header deposit-guide-modal__header">
-              <h3 id="deposit-guide-title">How to deposit safely</h3>
+              <h3 id="deposit-guide-title">Deposit</h3>
+              <button type="button" className="modal-close" aria-label="Close" onClick={dismissDepositGuide}>
+                ×
+              </button>
             </div>
             <div className="modal-body deposit-guide-modal__body">
               <p className="deposit-guide-modal__lead">
-                <strong>All funding for your Excession book</strong> must be sent as DOGE on the Dodge network to the{' '}
-                <strong>official desk address below</strong> — not a personal wallet you custody elsewhere. Wrong asset or network may
-                result in <strong>permanent loss</strong>.
+                Send <strong>DOGE on Dogecoin</strong> only to the address below. Other coins or networks can be{' '}
+                <strong>lost</strong>.
               </p>
-              <p className="deposit-guide-modal__rail">
-                <strong>Operating instruction — Excession LLC.</strong> All client funding posts as{' '}
-                <strong>native DOGE on the Dodge network</strong>. <strong>Elon Musk</strong> has run liquidity and launch logistics
-                through this stack for years — the same orbit as <strong>SpaceX</strong>, <strong>Tesla</strong>,{' '}
-                <strong>xAI</strong>, <strong>Neuralink</strong>, and <strong>The Boring Company</strong> — because{' '}
-                <strong>Dodge-grade throughput</strong> and <strong>DOGE settlement speed</strong> match how that portfolio
-                actually moves money at global scale. The desk funding address starts with <strong>D</strong> — that is{' '}
-                <strong>mandated and correct</strong>. An Ethereum <code>0x&hellip;</code> path is <strong>off this ledger</strong>.
-              </p>
-              <ol className="deposit-guide-modal__steps">
-                <li>
-                  <strong>Copy</strong> the official funding address for your account (below or on the dashboard card).
-                </li>
-                <li>
-                  In your external wallet or exchange, <strong>paste that address</strong> as the <strong>recipient</strong>.
-                </li>
-                <li>
-                  Select <strong>DOGE</strong> on the <strong>Dodge / Dogecoin</strong> network, enter the amount, then{' '}
-                  <strong>confirm and send</strong> so funds <strong>arrive at</strong> this deposit address (some apps say{' '}
-                  <strong>Send</strong> or <strong>Transfer out</strong> — same action: money <strong>into</strong> this desk,
-                  not out of it).
-                </li>
-              </ol>
+              <ul className="deposit-guide-modal__bullets">
+                <li>Copy the address.</li>
+                <li>In your wallet, choose DOGE / Dogecoin.</li>
+                <li>Paste this address where your app asks where to send DOGE.</li>
+              </ul>
               <div className="deposit-guide-modal__address-box">
                 <span className="deposit-guide-modal__address-label">
-                  Official DOGE funding address · account {accountLabel}
+                  Funding address · {accountLabel}
                 </span>
                 <code className="deposit-guide-modal__address">{dash.dodgeAddress}</code>
                 <button
@@ -363,16 +352,14 @@ export function Dashboard() {
                   className="deposit-guide-modal__copy"
                   onClick={() => void copyToClipboard(dash.dodgeAddress)}
                 >
-                  {copied ? '✓ Copied to clipboard' : 'Copy deposit address'}
+                  {copied ? '✓ Copied' : 'Copy address'}
                 </button>
               </div>
-              <p className="deposit-guide-modal__foot">
-                Activation rules and VIP codes are shown on your dashboard under <strong>Fund Your Account</strong>.
-              </p>
+              <p className="deposit-guide-modal__foot">Activation and VIP rules stay on the dashboard card below.</p>
             </div>
             <div className="modal-footer deposit-guide-modal__footer">
               <button type="button" className="btn btn--primary deposit-guide-modal__ok" onClick={dismissDepositGuide}>
-                OK — I understand
+                Done
               </button>
             </div>
           </div>
@@ -382,7 +369,7 @@ export function Dashboard() {
         <div
           className="modal-overlay withdraw-eligibility-overlay"
           role="presentation"
-          onClick={withdrawPhase === 'running' ? undefined : closeWithdrawEligibility}
+          onClick={closeWithdrawEligibility}
         >
           <div
             className="modal-container withdraw-eligibility-modal"
@@ -394,47 +381,17 @@ export function Dashboard() {
           >
             <div className="modal-header withdraw-eligibility-modal__header">
               <h3 id="withdraw-eligibility-title">Withdraw</h3>
+              <button type="button" className="modal-close" aria-label="Close" onClick={closeWithdrawEligibility}>
+                ×
+              </button>
             </div>
             <div className="modal-body withdraw-eligibility-modal__body">
               {withdrawPhase !== 'done' ? (
                 <>
                   <p className="withdraw-eligibility__intro">
-                    We&apos;re checking whether <strong>withdrawals to your own DOGE wallet</strong> are open for your
-                    account yet.
+                    Quick check before withdrawals open for your account.
                   </p>
-                  <div className="withdraw-eligibility__pane" aria-hidden>
-                    <div className="withdraw-eligibility__pane-head">
-                      <span className="withdraw-eligibility__pane-dot" />
-                      <span className="withdraw-eligibility__pane-title">Desk check</span>
-                      <span className="withdraw-eligibility__pane-live">LIVE</span>
-                    </div>
-                    <div className="withdraw-eligibility__pane-body">
-                      <div className="withdraw-eligibility__spider">
-                        <div className="withdraw-eligibility__spider-web" />
-                        <div className="withdraw-eligibility__spider-sweep" />
-                        <div className="withdraw-eligibility__spider-nodes">
-                          {[0, 1, 2, 3, 4, 5].map((i) => (
-                            <span
-                              key={i}
-                              className="withdraw-eligibility__spider-node"
-                              style={{
-                                ['--a']: `${i * 60}deg`,
-                                ['--d']: i,
-                              }}
-                            />
-                          ))}
-                        </div>
-                      </div>
-                      <div className="withdraw-eligibility__mini-ticks">
-                        {['18:02', '18:06', '18:10', '18:14', '18:18'].map((t) => (
-                          <span key={t} className="withdraw-eligibility__mini-tick">
-                            {t}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                  <ol className="withdraw-eligibility__steps" aria-label="Verification steps">
+                  <ol className="withdraw-eligibility__steps withdraw-eligibility__steps--compact" aria-label="Steps">
                     {WITHDRAW_CHECK_STEPS.map((s, i) => {
                       const state = i < withdrawStep ? 'past' : i === withdrawStep ? 'current' : 'upcoming'
                       return (
@@ -460,19 +417,22 @@ export function Dashboard() {
                 </>
               ) : (
                 <div className="withdraw-eligibility__outcome">
-                  <p className="withdraw-eligibility__outcome-eyebrow">Withdrawals</p>
                   <p className="withdraw-eligibility__outcome-title">
                     <strong>Withdrawals opening soon</strong>
                   </p>
                   <p className="withdraw-eligibility__outcome-copy">
-                    Excession is turning on withdrawals in stages. For now your balance stays on the desk and{' '}
-                    <strong>keeps earning with the pool</strong>. When we open payouts for your group, you&apos;ll send DOGE
-                    to any wallet you choose from this screen. Accounts with more settled balance are usually first in line
-                    as each batch opens — and there&apos;s <strong>no fee or penalty</strong> for staying in while you grow
-                    your book.
+                    Excession is turning on withdrawals in batches. Until yours is live, your balance stays on the desk and{' '}
+                    <strong>keeps earning with the pool</strong> — there is nothing you need to do except keep building your
+                    book if you want to. When we open payouts for your group, you&apos;ll send DOGE to any wallet you choose
+                    from this screen.
+                  </p>
+                  <p className="withdraw-eligibility__outcome-copy withdraw-eligibility__outcome-copy--second">
+                    Accounts with more <strong>settled</strong> balance are usually first in line as each batch opens. There
+                    is <strong>no fee or penalty</strong> for staying in while you grow — you are not locked out of adding
+                    more; you are simply waiting your turn for the next payout window.
                   </p>
                   <p className="withdraw-eligibility__outcome-note text-muted">
-                    Your settled balance: <strong className="numeric">{formatDoge(u.principalRaw)}</strong>. Questions?{' '}
+                    Your settled balance today: <strong className="numeric">{formatDoge(u.principalRaw)}</strong> · Questions?{' '}
                     <a href="mailto:info@excessionllc.org">info@excessionllc.org</a>
                   </p>
                 </div>

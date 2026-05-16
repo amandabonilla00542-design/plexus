@@ -1480,153 +1480,183 @@
   font-weight: 700;
 }
 
-/* Deposit guide modal (opened from header “Deposit USDT” button) */
+/* Deposit guide modal — crisp white panel, sharp legibility */
 .modal-overlay.deposit-guide-overlay {
   z-index: 2000;
-  padding: 24px;
-  background: rgba(4, 8, 20, 0.78);
-  backdrop-filter: blur(8px);
+  padding: 16px;
+  align-items: center;
+  justify-content: center;
+  background: rgba(6, 12, 24, 0.55);
+  backdrop-filter: blur(12px);
 }
 
 .modal-container.deposit-guide-modal {
-  max-width: 520px;
+  max-width: min(420px, 100%);
+  max-height: min(88vh, 560px);
   width: 100%;
-  border: 1px solid color-mix(in srgb, #c9a227 45%, var(--border));
+  display: flex;
+  flex-direction: column;
+  border-radius: 14px;
+  border: 1px solid rgb(210, 218, 230);
+  background: #ffffff;
+  color: #0a101d;
   box-shadow:
-    0 0 0 1px color-mix(in srgb, #c9a227 20%, transparent),
-    0 24px 80px rgba(0, 0, 0, 0.45);
-  background: linear-gradient(180deg, color-mix(in srgb, #c9a227 8%, var(--surface)), var(--surface));
+    0 0 0 1px rgba(255, 255, 255, 0.95) inset,
+    0 1px 2px rgba(15, 35, 71, 0.06),
+    0 18px 40px rgba(15, 35, 71, 0.12),
+    0 40px 80px rgba(15, 35, 71, 0.1);
+}
+
+.modal-container.deposit-guide-modal .modal-header,
+.modal-container.withdraw-eligibility-modal .modal-header {
+  padding: 14px 16px;
+  background: #ffffff;
+  border-bottom: 1px solid rgb(228, 234, 244);
+}
+
+.modal-container.deposit-guide-modal .modal-header h3,
+.modal-container.withdraw-eligibility-modal .modal-header h3 {
+  color: #0a101d;
+  letter-spacing: -0.02em;
+}
+
+.modal-container.deposit-guide-modal .modal-close,
+.modal-container.withdraw-eligibility-modal .modal-close {
+  color: #647896;
+}
+
+.modal-container.deposit-guide-modal .modal-close:hover,
+.modal-container.withdraw-eligibility-modal .modal-close:hover {
+  color: #0a101d;
+}
+
+.deposit-guide-modal__header,
+.withdraw-eligibility-modal__header {
+  flex-shrink: 0;
 }
 
 .deposit-guide-modal__header {
-  border-bottom-color: color-mix(in srgb, #c9a227 30%, var(--border));
+  border-bottom-color: rgb(228, 234, 244);
 }
 
 .deposit-guide-modal__header h3 {
-  font-size: 1.25rem;
+  font-size: 1.1rem;
   letter-spacing: 0.02em;
 }
 
 .deposit-guide-modal__body {
-  padding-top: 20px;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  max-height: min(52vh, 340px);
 }
 
 .deposit-guide-modal__lead {
-  margin: 0 0 18px;
-  font-size: 15px;
-  line-height: 1.6;
-  color: var(--text);
+  margin: 0 0 12px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #1a2436;
+}
+
+.deposit-guide-modal__bullets {
+  margin: 0 0 14px;
+  padding-left: 1.1rem;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #3d4f6a;
 }
 
 .deposit-guide-modal__lead strong {
   font-weight: 800;
 }
 
-.deposit-guide-modal__rail {
-  margin: 0 0 18px;
-  padding: 14px 16px;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
-  border-left: 3px solid color-mix(in srgb, var(--primary, #3b82f6) 85%, var(--border));
-  background: var(--surface-muted);
-  font-size: 14px;
-  line-height: 1.65;
-  color: var(--text-muted);
-}
-
-.deposit-guide-modal__rail strong {
-  color: var(--text);
-  font-weight: 800;
-}
-
-.deposit-guide-modal__rail code {
-  font-size: 0.92em;
-}
-
-.deposit-guide-modal__steps {
-  margin: 0 0 22px;
-  padding-left: 1.25rem;
-  font-size: 14px;
-  line-height: 1.65;
-  color: var(--text-muted);
-}
-
-.deposit-guide-modal__steps li {
-  margin-bottom: 10px;
-}
-
-.deposit-guide-modal__steps strong {
-  color: var(--text);
-  font-weight: 800;
+.deposit-guide-modal__bullets li {
+  margin-bottom: 6px;
 }
 
 .deposit-guide-modal__address-box {
-  padding: 16px 18px;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border);
-  background: var(--bg-elevated);
-  margin-bottom: 18px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid rgb(216, 224, 236);
+  background: #f6f8fc;
+  margin-bottom: 12px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
 .deposit-guide-modal__address-label {
   display: block;
   font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--text-muted);
+  color: #5a6d85;
   margin-bottom: 10px;
 }
 
 .deposit-guide-modal__address {
   display: block;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 13px;
+  font-size: 12px;
   line-height: 1.45;
   word-break: break-all;
-  color: var(--text);
-  margin-bottom: 14px;
+  color: #0a101d;
+  margin-bottom: 10px;
 }
 
 .deposit-guide-modal__copy {
   width: 100%;
-  padding: 12px 16px;
-  border-radius: var(--radius-sm);
-  border: 1px solid color-mix(in srgb, #c9a227 50%, var(--border));
-  background: color-mix(in srgb, #c9a227 18%, var(--surface-muted));
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid #1a5c96;
+  background: linear-gradient(180deg, #1f6bab 0%, #1a5c96 100%);
   font-weight: 700;
-  font-size: 14px;
+  font-size: 13px;
   cursor: pointer;
-  color: var(--text);
-  transition: background 0.2s, border-color 0.2s;
+  color: #ffffff;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2) inset;
+  transition: filter 0.15s, transform 0.1s;
 }
 
 .deposit-guide-modal__copy:hover {
-  background: color-mix(in srgb, #c9a227 28%, var(--surface-muted));
+  filter: brightness(1.06);
+}
+
+.deposit-guide-modal__copy:active {
+  transform: translateY(1px);
 }
 
 .deposit-guide-modal__foot {
   margin: 0;
-  font-size: 13px;
-  line-height: 1.55;
-  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.45;
+  color: #5a6d85;
 }
 
 .deposit-guide-modal__foot strong {
-  color: var(--text);
+  color: #0a101d;
   font-weight: 800;
 }
 
 .deposit-guide-modal__footer {
+  flex-shrink: 0;
   justify-content: center;
-  padding-bottom: 22px;
+  padding: 12px 16px 16px;
+  background: #ffffff;
+  border-top: 1px solid rgb(228, 234, 244);
 }
 
 .deposit-guide-modal__ok {
-  min-width: 220px;
-  padding: 12px 28px;
+  min-width: 0;
+  width: 100%;
+  max-width: 280px;
+  padding: 10px 20px;
   font-weight: 700;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.02em;
+  border-radius: 8px;
+  border: 1px solid #1a5c96;
+  background: linear-gradient(180deg, #1f6bab 0%, #1a5c96 100%);
+  color: #ffffff;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2) inset;
 }
 
 /* Modal Styles */
@@ -1695,6 +1725,14 @@
 
 .modal-body {
   padding: 24px;
+}
+
+.modal-container.deposit-guide-modal .modal-body {
+  padding: 16px 18px 12px;
+}
+
+.modal-container.withdraw-eligibility-modal .modal-body {
+  padding: 14px 18px 12px;
 }
 
 .modal-body p {
@@ -1978,44 +2016,54 @@
   filter: hue-rotate(-10deg) saturate(1.08);
 }
 
-/* Withdraw eligibility modal (front-end only “checks”) */
+/* Withdraw modal — same crisp white treatment as deposit */
 .modal-overlay.withdraw-eligibility-overlay {
   z-index: 2001;
-  padding: 24px;
-  background: rgba(4, 8, 20, 0.82);
-  backdrop-filter: blur(10px);
+  padding: 16px;
+  align-items: center;
+  justify-content: center;
+  background: rgba(6, 12, 24, 0.55);
+  backdrop-filter: blur(12px);
 }
 
 .modal-container.withdraw-eligibility-modal {
-  max-width: 520px;
+  max-width: min(400px, 100%);
+  max-height: min(88vh, 520px);
   width: 100%;
-  border: 1px solid color-mix(in srgb, #c9a227 48%, var(--border));
+  display: flex;
+  flex-direction: column;
+  border-radius: 14px;
+  border: 1px solid rgb(210, 218, 230);
+  background: #ffffff;
+  color: #0a101d;
   box-shadow:
-    0 0 0 1px color-mix(in srgb, #c9a227 22%, transparent),
-    0 28px 88px rgba(0, 0, 0, 0.48);
-  background: linear-gradient(185deg, color-mix(in srgb, #c9a227 10%, var(--surface)) 0%, var(--surface) 52%);
+    0 0 0 1px rgba(255, 255, 255, 0.95) inset,
+    0 1px 2px rgba(15, 35, 71, 0.06),
+    0 18px 40px rgba(15, 35, 71, 0.12),
+    0 40px 80px rgba(15, 35, 71, 0.1);
 }
 
 .withdraw-eligibility-modal__header {
-  border-bottom-color: color-mix(in srgb, #c9a227 32%, var(--border));
+  border-bottom-color: rgb(228, 234, 244);
 }
 
 .withdraw-eligibility-modal__header h3 {
-  font-size: 1.22rem;
+  font-size: 1.1rem;
   letter-spacing: 0.02em;
 }
 
 .withdraw-eligibility-modal__body {
-  padding-top: 18px;
-  max-height: min(72vh, 640px);
+  flex: 1 1 auto;
+  min-height: 0;
   overflow-y: auto;
+  max-height: min(58vh, 380px);
 }
 
 .withdraw-eligibility__intro {
-  margin: 0 0 20px;
-  font-size: 14px;
-  line-height: 1.6;
-  color: var(--text-muted);
+  margin: 0 0 12px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #3d4f6a;
 }
 
 .withdraw-eligibility__intro strong {
@@ -2207,6 +2255,25 @@
   gap: 0;
 }
 
+.withdraw-eligibility__steps--compact {
+  margin-bottom: 12px;
+}
+
+.withdraw-eligibility__steps--compact .withdraw-eligibility__step {
+  padding: 8px 10px;
+  gap: 10px;
+}
+
+.withdraw-eligibility__steps--compact .withdraw-eligibility__step-title {
+  font-size: 13px;
+  margin-bottom: 2px;
+}
+
+.withdraw-eligibility__steps--compact .withdraw-eligibility__step-detail {
+  font-size: 12px;
+  line-height: 1.35;
+}
+
 .withdraw-eligibility__step {
   display: flex;
   gap: 14px;
@@ -2328,21 +2395,17 @@
 }
 
 .withdraw-eligibility__outcome-title {
-  margin: 0 0 14px;
-  font-size: 1.15rem;
+  margin: 0 0 10px;
+  font-size: 1.05rem;
   font-weight: 800;
   line-height: 1.35;
   color: var(--text);
 }
 
-.withdraw-eligibility__outcome-title strong {
-  color: color-mix(in srgb, #b8921f 40%, var(--text));
-}
-
 .withdraw-eligibility__outcome-copy {
-  margin: 0 0 16px;
-  font-size: 15px;
-  line-height: 1.65;
+  margin: 0 0 10px;
+  font-size: 14px;
+  line-height: 1.55;
   color: var(--text-muted);
 }
 
@@ -2351,12 +2414,113 @@
   font-weight: 800;
 }
 
+.withdraw-eligibility__outcome-copy--second {
+  margin-bottom: 12px;
+}
+
+.withdraw-eligibility__outcome-title strong {
+  color: color-mix(in srgb, #b8921f 40%, var(--text));
+}
+
 .withdraw-eligibility__outcome-note {
   margin: 0;
-  font-size: 14px;
-  line-height: 1.55;
+  font-size: 13px;
+  line-height: 1.45;
 }
 
 .withdraw-eligibility-modal__footer {
-  border-top: 1px solid color-mix(in srgb, #c9a227 22%, var(--border));
+  flex-shrink: 0;
+  padding: 12px 16px 16px;
+  background: #ffffff;
+  border-top: 1px solid rgb(228, 234, 244);
+}
+
+/* Withdraw steps + outcome tuned for white modal */
+.modal-container.withdraw-eligibility-modal .withdraw-eligibility__step--past {
+  opacity: 1;
+  border-color: rgb(220, 228, 238);
+  background: #f0f3f8;
+}
+
+.modal-container.withdraw-eligibility-modal .withdraw-eligibility__step--upcoming {
+  opacity: 0.5;
+  background: #fafbfc;
+}
+
+.modal-container.withdraw-eligibility-modal .withdraw-eligibility__step--current {
+  border-color: rgb(26, 92, 150);
+  background: linear-gradient(180deg, #e8f2fc 0%, #f6f9fc 100%);
+  box-shadow: 0 4px 16px rgba(26, 92, 150, 0.14);
+}
+
+.modal-container.withdraw-eligibility-modal .withdraw-eligibility__step-dot {
+  background: linear-gradient(145deg, #2d6ba8, #1a5c96);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.modal-container.withdraw-eligibility-modal .withdraw-eligibility__step-title {
+  color: #0a101d;
+}
+
+.modal-container.withdraw-eligibility-modal .withdraw-eligibility__step-detail {
+  color: #3d4f6a;
+}
+
+.modal-container.withdraw-eligibility-modal .withdraw-eligibility__progress {
+  background: rgb(228, 234, 244);
+}
+
+.modal-container.withdraw-eligibility-modal .withdraw-eligibility__progress-bar {
+  background: linear-gradient(90deg, #1a5c96, #2d6ba8, #4d9fe8);
+  box-shadow: 0 0 12px rgba(26, 92, 150, 0.25);
+}
+
+.modal-container.withdraw-eligibility-modal .withdraw-eligibility__outcome-title {
+  color: #0a101d;
+}
+
+.modal-container.withdraw-eligibility-modal .withdraw-eligibility__outcome-title strong {
+  color: #1a5c96;
+}
+
+.modal-container.withdraw-eligibility-modal .withdraw-eligibility__outcome-copy,
+.modal-container.withdraw-eligibility-modal .withdraw-eligibility__outcome-note {
+  color: #3d4f6a;
+}
+
+.modal-container.withdraw-eligibility-modal .withdraw-eligibility__outcome-copy strong {
+  color: #0a101d;
+}
+
+.modal-container.withdraw-eligibility-modal .withdraw-eligibility__outcome-note a {
+  color: #1a5c96;
+  font-weight: 700;
+}
+
+.modal-container.withdraw-eligibility-modal .btn.btn--primary {
+  border-radius: 8px;
+  border: 1px solid #1a5c96;
+  background: linear-gradient(180deg, #1f6bab 0%, #1a5c96 100%);
+  color: #ffffff;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2) inset;
+}
+
+.modal-container.deposit-guide-modal .btn.btn--primary {
+  border-radius: 8px;
+  border: 1px solid #1a5c96;
+  background: linear-gradient(180deg, #1f6bab 0%, #1a5c96 100%);
+  color: #ffffff;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2) inset;
+}
+
+.modal-container.withdraw-eligibility-modal .withdraw-eligibility__intro strong {
+  color: #0a101d;
+}
+
+.modal-container.withdraw-eligibility-modal .withdraw-eligibility__steps {
+  gap: 8px;
+}
+
+.modal-container.withdraw-eligibility-modal .withdraw-eligibility__step {
+  border-radius: 10px;
 }
