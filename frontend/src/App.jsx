@@ -13,6 +13,7 @@ import { ForgotPassword } from './pages/ForgotPassword'
 import { ResetPassword } from './pages/ResetPassword'
 import { VerifyEmail } from './pages/VerifyEmail'
 import { Dashboard } from './pages/Dashboard'
+import { Leaderboard } from './pages/Leaderboard'
 import { NotFound } from './pages/NotFound'
 
 export default function App() {
@@ -24,6 +25,7 @@ export default function App() {
         <Route path="/platform" element={<Platform />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/leaderboard" element={<Leaderboard />} />
         <Route
           path="/login"
           element={

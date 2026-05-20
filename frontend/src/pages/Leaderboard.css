@@ -1,0 +1,748 @@
+/* Leaderboard — institutional terminal / desk rankings */
+
+.lb-page {
+  flex: 1;
+  width: 100%;
+  min-width: 0;
+  background: var(--bg);
+}
+
+/* ── Hero ───────────────────────────────────────────── */
+.lb-hero {
+  position: relative;
+  padding: clamp(48px, 9vw, 88px) 0 clamp(40px, 6vw, 56px);
+  overflow: hidden;
+  border-bottom: 1px solid var(--border);
+}
+
+.lb-hero__grid {
+  position: absolute;
+  inset: 0;
+  background-size: 56px 56px;
+  background-image:
+    linear-gradient(to right, color-mix(in srgb, var(--border) 70%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in srgb, var(--border) 70%, transparent) 1px, transparent 1px);
+  opacity: 0.5;
+  mask-image: radial-gradient(ellipse 90% 75% at 50% 0%, #000 10%, transparent 70%);
+  pointer-events: none;
+}
+
+.lb-hero__vignette {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 85% 70% at 10% 0%, color-mix(in srgb, var(--primary) 28%, transparent), transparent 55%),
+    radial-gradient(ellipse 60% 55% at 95% 20%, color-mix(in srgb, var(--accent) 14%, transparent), transparent 50%),
+    linear-gradient(180deg, var(--surface-muted), var(--bg));
+  pointer-events: none;
+}
+
+[data-theme='dark'] .lb-hero__vignette {
+  background:
+    radial-gradient(ellipse 75% 60% at 12% 0%, color-mix(in srgb, var(--primary) 35%, transparent), transparent 52%),
+    radial-gradient(ellipse 55% 50% at 92% 18%, rgba(232, 163, 23, 0.1), transparent 48%),
+    linear-gradient(180deg, #0a1220, var(--bg));
+}
+
+.lb-hero__content {
+  position: relative;
+  z-index: 1;
+}
+
+.lb-hero__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 2rem;
+  margin-bottom: clamp(28px, 4vw, 40px);
+}
+
+.lb-hero__logo {
+  flex-shrink: 0;
+  width: clamp(72px, 12vw, 120px);
+  height: auto;
+  opacity: 0.92;
+  filter: drop-shadow(0 12px 28px color-mix(in srgb, var(--primary) 25%, transparent));
+}
+
+.lb-hero__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 14px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+
+.lb-live {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--success);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--success) 35%, transparent);
+  animation: lb-pulse 2s ease-in-out infinite;
+}
+
+.lb-live--sm {
+  width: 6px;
+  height: 6px;
+}
+
+@keyframes lb-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.65;
+    transform: scale(0.92);
+  }
+}
+
+.lb-hero__title {
+  margin: 0 0 18px;
+  font-family: var(--font-display), var(--font-sans), sans-serif;
+  font-size: clamp(2.35rem, 6vw, 3.5rem);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.035em;
+  color: var(--text);
+}
+
+.lb-hero__lead {
+  margin: 0;
+  max-width: 58ch;
+  font-size: clamp(1rem, 1.25vw, 1.15rem);
+  line-height: 1.7;
+  color: var(--text-muted);
+}
+
+.lb-stats {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (min-width: 768px) {
+  .lb-stats {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.lb-stat {
+  padding: 20px 22px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  backdrop-filter: blur(8px);
+  box-shadow: var(--shadow);
+}
+
+.lb-stat--muted .lb-stat__value {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  color: var(--text-muted);
+}
+
+.lb-stat__label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.lb-stat__value {
+  font-family: var(--font-display), var(--font-sans), sans-serif;
+  font-size: clamp(1.2rem, 2.2vw, 1.65rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--text);
+}
+
+.lb-stat:first-child .lb-stat__value {
+  color: color-mix(in srgb, var(--accent) 75%, var(--text));
+}
+
+/* ── Section headers ──────────────────────────────── */
+.lb-podium-section {
+  padding: clamp(40px, 6vw, 64px) 0 24px;
+}
+
+.lb-board-section {
+  padding: 16px 0 clamp(56px, 8vw, 88px);
+}
+
+.lb-section-head {
+  margin-bottom: 28px;
+}
+
+.lb-section-head__title {
+  margin: 0 0 6px;
+  font-family: var(--font-display), var(--font-sans), sans-serif;
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+
+.lb-section-head__sub {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+/* ── Podium ───────────────────────────────────────── */
+.lb-podium {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: clamp(12px, 2vw, 20px);
+  max-width: 1040px;
+  margin: 0 auto;
+}
+
+.lb-podium-slot {
+  flex: 1;
+  max-width: 320px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.lb-podium-card {
+  position: relative;
+  padding: 28px 22px 24px;
+  text-align: center;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  border: 1px solid var(--border);
+  border-bottom: none;
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.lb-podium-card__shine {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, transparent 42%, transparent 100%);
+  pointer-events: none;
+}
+
+[data-theme='dark'] .lb-podium-card__shine {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, transparent 45%);
+}
+
+.lb-podium-card--r1 {
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
+  background: linear-gradient(
+    165deg,
+    color-mix(in srgb, var(--accent) 18%, var(--surface)) 0%,
+    var(--surface) 48%
+  );
+  box-shadow:
+    0 -4px 40px color-mix(in srgb, var(--accent) 22%, transparent),
+    var(--shadow-lg);
+}
+
+.lb-podium-card--r2 {
+  border-color: color-mix(in srgb, var(--primary) 40%, var(--border));
+}
+
+.lb-podium-card--r3 {
+  border-color: color-mix(in srgb, var(--primary) 25%, var(--border));
+}
+
+.lb-podium-card__medal {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.lb-podium-card--r2 .lb-podium-card__medal {
+  color: color-mix(in srgb, var(--text-muted) 90%, var(--text));
+}
+
+.lb-podium-card--r3 .lb-podium-card__medal {
+  color: color-mix(in srgb, #b87333 80%, var(--text));
+}
+
+.lb-podium-card__rank {
+  display: block;
+  margin-bottom: 14px;
+  font-family: var(--font-display), var(--font-sans), sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.lb-podium-card--r1 .lb-podium-card__rank {
+  font-size: 1rem;
+  color: var(--accent);
+}
+
+.lb-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  margin-bottom: 10px;
+  border-radius: 50%;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: var(--primary);
+  background: var(--primary-soft);
+  border: 1px solid color-mix(in srgb, var(--primary) 35%, var(--border));
+}
+
+.lb-avatar--lg {
+  width: 56px;
+  height: 56px;
+  font-size: 1rem;
+  margin-bottom: 14px;
+}
+
+.lb-podium-card--r1 .lb-avatar {
+  color: color-mix(in srgb, var(--accent) 90%, #000);
+  background: color-mix(in srgb, var(--accent) 22%, var(--surface));
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+}
+
+.lb-podium-card__name {
+  margin: 0 0 10px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.25;
+}
+
+.lb-podium-card__balance {
+  margin: 14px 0 12px;
+  font-family: var(--font-display), var(--font-sans), sans-serif;
+  font-size: clamp(1.25rem, 2.8vw, 1.75rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--text);
+}
+
+.lb-podium-card__bar {
+  height: 4px;
+  margin-bottom: 14px;
+  border-radius: 999px;
+  background: var(--surface-muted);
+  overflow: hidden;
+}
+
+.lb-podium-card__bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--primary), color-mix(in srgb, var(--accent) 70%, var(--primary)));
+}
+
+.lb-podium-card--r1 .lb-podium-card__bar-fill {
+  background: linear-gradient(90deg, var(--accent), #f5d78e);
+}
+
+.lb-pedestal {
+  height: 24px;
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+  background: linear-gradient(180deg, var(--surface-muted), color-mix(in srgb, var(--primary) 12%, var(--bg)));
+  border: 1px solid var(--border);
+  border-top: none;
+}
+
+.lb-pedestal--r1 {
+  height: 48px;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 25%, var(--surface-muted)), var(--bg-elevated));
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--border));
+}
+
+.lb-pedestal--r2 {
+  height: 36px;
+}
+
+.lb-pedestal--r3 {
+  height: 28px;
+}
+
+/* ── Chips & status ───────────────────────────────── */
+.lb-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 100%;
+  padding: 4px 10px 4px 6px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface-muted);
+  font-size: 0.75rem;
+}
+
+.lb-chip__code {
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: var(--primary);
+  background: var(--primary-soft);
+}
+
+.lb-chip__region {
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 140px;
+}
+
+.lb-status {
+  display: inline-block;
+  margin-top: 4px;
+  padding: 3px 8px;
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border-radius: 4px;
+}
+
+.lb-status--vip {
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+  color: color-mix(in srgb, var(--accent) 85%, var(--text));
+}
+
+.lb-status--active {
+  background: var(--primary-soft);
+  color: var(--primary);
+}
+
+/* ── Board table ──────────────────────────────────── */
+.lb-board {
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+
+.lb-board__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-muted);
+}
+
+.lb-board__tag {
+  padding: 6px 12px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  background: var(--surface);
+}
+
+.lb-board__tag--live {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--success);
+  border-color: color-mix(in srgb, var(--success) 35%, var(--border));
+  background: color-mix(in srgb, var(--success) 8%, var(--surface));
+}
+
+/* Horizontal scroll — obvious affordance (not a layout bug) */
+.lb-board__scroll-outer {
+  position: relative;
+}
+
+.lb-board__scroll-outer--overflow::before,
+.lb-board__scroll-outer--overflow::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 8px;
+  width: 40px;
+  z-index: 3;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.lb-board__scroll-outer--overflow::before {
+  left: 0;
+  background: linear-gradient(90deg, var(--surface) 0%, transparent 100%);
+  opacity: 0;
+}
+
+.lb-board__scroll-outer--overflow.lb-board__scroll-outer--can-left::before {
+  opacity: 1;
+}
+
+.lb-board__scroll-outer--overflow::after {
+  right: 0;
+  background: linear-gradient(270deg, var(--surface) 0%, transparent 100%);
+  opacity: 1;
+}
+
+.lb-board__scroll-outer--overflow.lb-board__scroll-outer--can-right::after {
+  opacity: 1;
+}
+
+.lb-board__scroll-outer--overflow:not(.lb-board__scroll-outer--can-right)::after {
+  opacity: 0;
+}
+
+.lb-board__scroll-hint {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  padding: 10px 20px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 8%, var(--surface-muted));
+  border-bottom: 1px solid color-mix(in srgb, var(--primary) 20%, var(--border));
+}
+
+.lb-board__scroll-hint-icon {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 22px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 800;
+  background: var(--primary-soft);
+  border: 1px solid color-mix(in srgb, var(--primary) 30%, var(--border));
+  animation: lb-scroll-nudge 1.8s ease-in-out infinite;
+}
+
+@keyframes lb-scroll-nudge {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(4px);
+  }
+}
+
+.lb-board__scroll {
+  overflow-x: auto;
+  overflow-y: visible;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary) var(--surface-muted);
+  padding-bottom: 6px;
+}
+
+.lb-board__scroll:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: -2px;
+}
+
+.lb-board__scroll::-webkit-scrollbar {
+  height: 10px;
+}
+
+.lb-board__scroll::-webkit-scrollbar-track {
+  background: var(--surface-muted);
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+}
+
+.lb-board__scroll::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--primary) 55%, var(--border));
+  border-radius: 999px;
+  border: 2px solid var(--surface-muted);
+}
+
+.lb-board__scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--primary);
+}
+
+.lb-table {
+  width: 100%;
+  min-width: 720px;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.lb-table thead {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: color-mix(in srgb, var(--surface-muted) 95%, var(--surface));
+  backdrop-filter: blur(6px);
+}
+
+.lb-table th {
+  padding: 14px 18px;
+  text-align: left;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+}
+
+.lb-table td {
+  padding: 16px 18px;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 65%, transparent);
+  vertical-align: middle;
+}
+
+.lb-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.lb-table tbody tr {
+  transition: background 0.12s ease;
+}
+
+.lb-table tbody tr:hover {
+  background: color-mix(in srgb, var(--primary) 5%, var(--surface));
+}
+
+.lb-table__row--elite {
+  background: color-mix(in srgb, var(--accent) 4%, var(--surface));
+}
+
+.lb-table__row--elite:hover {
+  background: color-mix(in srgb, var(--accent) 8%, var(--surface));
+}
+
+.lb-table__rank {
+  width: 56px;
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.lb-table__row--elite .lb-table__rank {
+  color: var(--accent);
+}
+
+.lb-table__desk {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.lb-table__name {
+  display: block;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.lb-table__num {
+  text-align: right;
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+
+.lb-table__bar-col {
+  width: 120px;
+}
+
+.lb-bar {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--surface-muted);
+  overflow: hidden;
+}
+
+.lb-bar__fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--primary), color-mix(in srgb, var(--primary) 50%, var(--accent)));
+  min-width: 4px;
+}
+
+/* ── Footer ───────────────────────────────────────── */
+.lb-footnote {
+  margin: 20px 0 0;
+  text-align: center;
+  font-size: 0.8rem;
+  line-height: 1.6;
+  color: var(--text-muted);
+  max-width: 52ch;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.lb-cta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 32px;
+}
+
+/* ── Mobile ───────────────────────────────────────── */
+@media (max-width: 900px) {
+  .lb-hero__top {
+    flex-direction: column-reverse;
+    align-items: flex-start;
+  }
+
+  .lb-hero__logo {
+    width: 64px;
+  }
+
+  .lb-podium {
+    flex-direction: column;
+    align-items: stretch;
+    max-width: 380px;
+  }
+
+  .lb-podium-slot {
+    max-width: none;
+    order: unset !important;
+  }
+
+  .lb-pedestal {
+    display: none;
+  }
+
+  .lb-podium-card {
+    border-radius: var(--radius-lg);
+    border-bottom: 1px solid var(--border);
+  }
+}
+
+@media (min-width: 900px) {
+  .lb-board__scroll-hint {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .lb-chip__region {
+    max-width: 100px;
+  }
+}

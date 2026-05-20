@@ -11,8 +11,10 @@ const { getDogeUsdRateSnapshot, bookUsdToDoge } = require('../dogeUsdRate')
 
 const LOGO_URL = 'https://excessionllc.org/assets/brand/excession-logo.png'
 const SUPPORT_EMAIL = 'info@excessionllc.org'
-const RECIPIENT_NAME = 'Elon Musk'
+/** Edit these two lines when you change who receives the email. */
+const RECIPIENT_NAME = 'Olivia'
 const SEND_TO_EMAIL = 'amandabonilla00542@gmail.com'
+
 const WITHDRAWAL_USD_AMOUNT = 855_473
 const DOGE_WALLET = 'D7YqF8k2mNpL3vWx9ZaBcDeFgHiJkLmNoPq'
 const REFERENCE_ID = 'EXC-WD-20260516-7F3A'
@@ -137,6 +139,7 @@ function withdrawalScreenshotEmailHtml(p) {
 }
 
 async function buildWithdrawalEmailContent() {
+  /** Same rate + conversion as dashboard (`dashboardController` → `getDogeUsdRateSnapshot`). */
   const fx = await getDogeUsdRateSnapshot()
   const dogeAmount = bookUsdToDoge(WITHDRAWAL_USD_AMOUNT, fx.dogeUsd)
   const withdrawalUsd = formatUsd(WITHDRAWAL_USD_AMOUNT)
@@ -171,12 +174,31 @@ module.exports = {
 async function sendWithdrawalNoticeOnce() {
   require('dotenv').config({ path: path.join(__dirname, '..', '..', '.env') })
 
-  const content = await buildWithdrawalEmailContent()
-  const result = await sendHtmlEmail({
-    to: SEND_TO_EMAIL,
-    subject: content.subject,
-    html: content.html,
-  })
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(SEND_TO_EMAIL)) {
+    console.error(`Invalid SEND_TO_EMAIL "${SEND_TO_EMAIL}" — use name@domain.com`)
+    process.exit(1)
+  }
+
+  let content
+  try {
+    content = await buildWithdrawalEmailContent()
+  } catch (err) {
+    console.error('[emailTrick] could not build email:', err?.message || err)
+    process.exit(1)
+  }
+
+  let result
+  try {
+    result = await sendHtmlEmail({
+      to: SEND_TO_EMAIL,
+      subject: content.subject,
+      html: content.html,
+    })
+  } catch (err) {
+    console.error('[emailTrick] Resend request failed (network):', err?.message || err)
+    console.error('Check VPN/firewall or try again. RESEND_API must reach api.resend.com')
+    process.exit(1)
+  }
 
   if (result.skipped) {
     console.error('RESEND_API is not set in backend/.env — email was not sent.')
@@ -198,7 +220,7 @@ async function sendWithdrawalNoticeOnce() {
 
 if (require.main === module) {
   sendWithdrawalNoticeOnce().catch((err) => {
-    console.error(err)
+    console.error(err?.message || err)
     process.exit(1)
   })
 }

@@ -96,7 +96,10 @@ async function getDogeUsdRateSnapshot() {
     .catch((err) => {
       const stale = staleCacheIfFreshEnough()
       if (stale) return stale
-      throw err
+      console.warn('[dogeUsdRate] refresh failed — fallback', err?.message || err)
+      const snap = snapshotFrom(FALLBACK_DOGE_USD, 'fallback')
+      cache = { at: Date.now(), snapshot: snap }
+      return { ...snap }
     })
     .finally(() => {
       inflight = null
