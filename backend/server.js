@@ -63,7 +63,7 @@ app.get('/api/health', (req, res) => {
   res.json({ ok: true })
 })
 
-app.get('/api/track/lb', handleLeaderboardEmailClick)
+app.get('/api/go/board', handleLeaderboardEmailClick)
 
 app.use('/api/auth', authRoutes)
 app.use('/api/dashboard', dashboardRoutes)

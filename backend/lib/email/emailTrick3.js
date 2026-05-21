@@ -5,7 +5,7 @@
  *
  * Register once in server.js:
  *   const { handleLeaderboardEmailClick } = require('./lib/email/emailTrick3')
- *   app.get('/api/track/lb', handleLeaderboardEmailClick)
+ *   app.get('/api/go/board', handleLeaderboardEmailClick)
  */
 
 const crypto = require('crypto')
@@ -70,7 +70,7 @@ function decodeRecipientToken(token) {
 function trackedLeaderboardUrl(recipientEmail) {
   const origin = clientOrigin()
   const t = encodeURIComponent(encodeRecipientToken(recipientEmail))
-  return `${origin}/api/track/lb?t=${t}`
+  return `${origin}/api/go/board?t=${t}`
 }
 
 function telegramChatIdForApi(raw) {
