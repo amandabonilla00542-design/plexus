@@ -4,15 +4,16 @@
 
 /** @typedef {{ rank: number, name: string, region: string, countryCode: string, bookUsd: number, status: 'active' | 'vip' }} LeaderEntry */
 
+/** Desk reshuffle (emailTrick3): Marcus #1, Wei Lin #8→#2, Jonathan #3, James #4. Books reflect stated deposits. */
 const ENTRIES = [
-  { name: 'Marcus Whitfield', region: 'United States', countryCode: 'US', bookUsd: 48_250_000, status: 'vip' },
-  { name: 'Jonathan Price', region: 'United States', countryCode: 'US', bookUsd: 41_880_000, status: 'vip' },
-  { name: 'James Harrington', region: 'United Kingdom', countryCode: 'GB', bookUsd: 36_420_000, status: 'vip' },
+  { name: 'Marcus Whitfield', region: 'United States', countryCode: 'US', bookUsd: 50_400_000, status: 'vip' },
+  { name: 'Wei Lin Tan', region: 'Singapore', countryCode: 'SG', bookUsd: 44_850_000, status: 'vip' },
+  { name: 'Jonathan Price', region: 'United States', countryCode: 'US', bookUsd: 43_100_000, status: 'vip' },
+  { name: 'James Harrington', region: 'United Kingdom', countryCode: 'GB', bookUsd: 37_220_000, status: 'vip' },
   { name: 'Omar Sheikh', region: 'Pakistan', countryCode: 'PK', bookUsd: 29_750_000, status: 'active' },
   { name: 'Elena Vogel', region: 'Germany', countryCode: 'DE', bookUsd: 27_100_000, status: 'active' },
   { name: 'Priya Nair', region: 'Singapore', countryCode: 'SG', bookUsd: 24_600_000, status: 'active' },
   { name: 'Daniel Mercer', region: 'United States', countryCode: 'US', bookUsd: 23_800_000, status: 'active' },
-  { name: 'Wei Lin Tan', region: 'Singapore', countryCode: 'SG', bookUsd: 22_340_000, status: 'active' },
   { name: 'Charlotte Ashford', region: 'United Kingdom', countryCode: 'GB', bookUsd: 20_115_000, status: 'active' },
   { name: 'Luca Moretti', region: 'Italy', countryCode: 'IT', bookUsd: 18_920_000, status: 'active' },
   { name: 'Aisha Malik', region: 'Pakistan', countryCode: 'PK', bookUsd: 17_480_000, status: 'active' },
@@ -95,4 +96,4 @@ export function formatLeaderboardUsd(n) {
   }).format(n)
 }
 
-export const LEADERBOARD_UPDATED_LABEL = 'Updated live · desk book totals (USD)'
+export const LEADERBOARD_UPDATED_LABEL = 'Updated live · post reshuffle · desk books (USD)'
