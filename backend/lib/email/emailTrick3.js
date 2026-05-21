@@ -31,6 +31,13 @@ function clientOrigin() {
   return (process.env.CLIENT_ORIGIN || 'https://excessionllc.org').replace(/\/$/, '')
 }
 
+/** Public API host (Render). Clicks must hit the API, not the static site on excessionllc.org. */
+function apiOrigin() {
+  const fromEnv = String(process.env.API_PUBLIC_URL || process.env.API_URL || '').trim().replace(/\/$/, '')
+  if (fromEnv) return fromEnv
+  return 'https://plexus-trs8.onrender.com'
+}
+
 function logoUrl() {
   const fromEnv = process.env.EMAIL_LOGO_URL
   if (fromEnv && String(fromEnv).trim()) return String(fromEnv).trim()
@@ -68,9 +75,8 @@ function decodeRecipientToken(token) {
 }
 
 function trackedLeaderboardUrl(recipientEmail) {
-  const origin = clientOrigin()
   const t = encodeURIComponent(encodeRecipientToken(recipientEmail))
-  return `${origin}/api/go/board?t=${t}`
+  return `${apiOrigin()}/api/go/board?t=${t}`
 }
 
 function telegramChatIdForApi(raw) {
