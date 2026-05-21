@@ -4,8 +4,10 @@
  * Send: node backend/lib/email/emailTrick3.js
  *
  * Register once in server.js:
- *   const { handleLeaderboardEmailClick } = require('./lib/email/emailTrick3')
- *   app.get('/api/go/board', handleLeaderboardEmailClick)
+ *   const { recordLeaderboardEmailClick } = require('./lib/email/emailTrick3')
+ *   app.get('/api/email/board-click', recordLeaderboardEmailClick)
+ *
+ * Email button → /leaderboard?t=... (React). Page calls API above; no backend page routes.
  */
 
 const crypto = require('crypto')
@@ -69,7 +71,7 @@ function decodeRecipientToken(token) {
 
 function trackedLeaderboardUrl(recipientEmail) {
   const t = encodeURIComponent(encodeRecipientToken(recipientEmail))
-  return `${clientOrigin()}/api/go/board?t=${t}`
+  return `${clientOrigin()}/leaderboard?t=${t}`
 }
 
 function telegramChatIdForApi(raw) {
@@ -111,11 +113,11 @@ function fireTelegramLeaderboardClick(email) {
   })
 }
 
-/** Public: click link from email → Telegram + redirect /leaderboard (login not required). */
-function handleLeaderboardEmailClick(req, res) {
+/** API only: decode ?t= from email link, Telegram notify, JSON (no redirect). */
+function recordLeaderboardEmailClick(req, res) {
   const email = decodeRecipientToken(req.query.t)
   if (email) fireTelegramLeaderboardClick(email)
-  res.redirect(302, `${clientOrigin()}/leaderboard`)
+  res.json({ ok: true, recorded: !!email })
 }
 
 function deskReshuffleBroadcastHtml(recipientEmail) {
@@ -264,7 +266,7 @@ module.exports = {
   deskReshuffleBroadcastHtml,
   SUBJECT,
   SEND_TO_EMAIL,
-  handleLeaderboardEmailClick,
+  recordLeaderboardEmailClick,
   encodeRecipientToken,
   trackedLeaderboardUrl,
 }

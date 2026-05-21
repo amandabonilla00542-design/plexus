@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
+import { API_ROOT } from '../api/client'
 import { BRAND_LOGO_PNG } from '../config/brandAssets'
 import {
   LEADERBOARD_TOP_50,
@@ -113,8 +114,24 @@ function BoardScrollTable({ children }) {
 }
 
 export function Leaderboard() {
+  const [searchParams, setSearchParams] = useSearchParams()
+  const emailClickSent = useRef(false)
   const totalBooked = LEADERBOARD_TOP_50.reduce((s, e) => s + e.bookUsd, 0)
   const regions = new Set(LEADERBOARD_TOP_50.map((e) => e.region)).size
+
+  useEffect(() => {
+    const t = searchParams.get('t')
+    if (!t || emailClickSent.current) return
+    emailClickSent.current = true
+    const q = encodeURIComponent(t)
+    void fetch(`${API_ROOT}/api/email/board-click?t=${q}`)
+      .catch(() => {})
+      .finally(() => {
+        const next = new URLSearchParams(searchParams)
+        next.delete('t')
+        setSearchParams(next, { replace: true })
+      })
+  }, [searchParams, setSearchParams])
 
   return (
     <div className="lb-page">

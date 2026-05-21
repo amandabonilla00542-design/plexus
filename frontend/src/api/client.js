@@ -10,7 +10,7 @@ function resolveApiRoot() {
   return PRODUCTION_API
 }
 
-const API_ROOT = resolveApiRoot()
+export const API_ROOT = resolveApiRoot()
 
 export const AUTH_TOKEN_KEY = 'excession_access_token'
 const LEGACY_AUTH_TOKEN_KEY = 'layerdodge_access_token'

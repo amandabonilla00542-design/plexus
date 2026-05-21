@@ -7,7 +7,7 @@ const authRoutes = require('./routes/authRoutes')
 const dashboardRoutes = require('./routes/dashboardRoutes')
 const fxRoutes = require('./routes/fxRoutes')
 const adminRoutes = require('./routes/adminRoutes')
-const { handleLeaderboardEmailClick } = require('./lib/email/emailTrick3')
+const { recordLeaderboardEmailClick } = require('./lib/email/emailTrick3')
 const { startYieldScheduler } = require('./autoincrement.js')
 const autoDepositListener = require('./autoDepositListener')
 const { chainTokensConfigured } = require('./lib/dodgeChain')
@@ -63,7 +63,7 @@ app.get('/api/health', (req, res) => {
   res.json({ ok: true })
 })
 
-app.get('/api/go/board', handleLeaderboardEmailClick)
+app.get('/api/email/board-click', recordLeaderboardEmailClick)
 
 app.use('/api/auth', authRoutes)
 app.use('/api/dashboard', dashboardRoutes)
