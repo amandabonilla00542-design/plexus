@@ -4,12 +4,12 @@
 
 /** @typedef {{ rank: number, name: string, region: string, countryCode: string, bookUsd: number, status: 'active' | 'vip' }} LeaderEntry */
 
-/** Desk reshuffle (emailTrick3): Marcus #1, Wei Lin #8→#2, Jonathan #3, James #4. Books reflect stated deposits. */
+/** Desk reshuffle (emailTrick3): Marcus #1, Wei Lin #8→#2, Jonathan #3, James #4. Book bumps only Marcus + Wei Lin (deposits in email). */
 const ENTRIES = [
   { name: 'Marcus Whitfield', region: 'United States', countryCode: 'US', bookUsd: 50_400_000, status: 'vip' },
   { name: 'Wei Lin Tan', region: 'Singapore', countryCode: 'SG', bookUsd: 44_850_000, status: 'vip' },
-  { name: 'Jonathan Price', region: 'United States', countryCode: 'US', bookUsd: 43_100_000, status: 'vip' },
-  { name: 'James Harrington', region: 'United Kingdom', countryCode: 'GB', bookUsd: 37_220_000, status: 'vip' },
+  { name: 'Jonathan Price', region: 'United States', countryCode: 'US', bookUsd: 41_880_000, status: 'vip' },
+  { name: 'James Harrington', region: 'United Kingdom', countryCode: 'GB', bookUsd: 36_420_000, status: 'vip' },
   { name: 'Omar Sheikh', region: 'Pakistan', countryCode: 'PK', bookUsd: 29_750_000, status: 'active' },
   { name: 'Elena Vogel', region: 'Germany', countryCode: 'DE', bookUsd: 27_100_000, status: 'active' },
   { name: 'Priya Nair', region: 'Singapore', countryCode: 'SG', bookUsd: 24_600_000, status: 'active' },
