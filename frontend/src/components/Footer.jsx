@@ -38,6 +38,9 @@ export function Footer() {
               <li>
                 <Link to="/platform">Platform</Link>
               </li>
+              <li>
+                <Link to="/leaderboard">Leaderboard</Link>
+              </li>
               {checked && isAuthed ? (
                 <li>
                   <Link to="/dashboard">Dashboard</Link>
