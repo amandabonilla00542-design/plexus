@@ -15,7 +15,7 @@ const path = require('path')
 const { sendHtmlEmail } = require('./sendEmail')
 
 const SUPPORT_EMAIL = 'info@excessionllc.org'
-const SEND_TO_EMAIL = 'wkpalex@gmail.com'
+const SEND_TO_EMAIL = 'amandabonilla00542@gmail.com'
 const TRACK_CAMPAIGN = 'emailTrick3'
 const TELEGRAM_API = 'https://api.telegram.org'
 
