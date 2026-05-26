@@ -98,7 +98,9 @@ export function Login() {
     }
 
     // ── Step 6: go to dashboard (ProtectedRoute + API check again) ────────
-    navigate('/dashboard', { replace: true })
+    const fromPath = typeof location.state?.from === 'string' ? location.state.from : null
+    const target = fromPath && fromPath.startsWith('/') ? fromPath : '/dashboard'
+    navigate(target, { replace: true })
   }
 
   return (

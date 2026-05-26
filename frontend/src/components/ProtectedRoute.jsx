@@ -14,12 +14,14 @@ export function ProtectedRoute({ children }) {
     )
   }
 
+  const fromPath = `${location.pathname}${location.search || ''}`
+
   if (!user) {
-    return <Navigate to="/login" replace state={{ from: location.pathname }} />
+    return <Navigate to="/login" replace state={{ from: fromPath }} />
   }
 
   if (user.verified === false) {
-    return <Navigate to="/login" replace state={{ from: location.pathname, needsVerification: true }} />
+    return <Navigate to="/login" replace state={{ from: fromPath, needsVerification: true }} />
   }
 
   return children

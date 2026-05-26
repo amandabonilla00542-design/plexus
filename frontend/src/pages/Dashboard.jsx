@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { authFetch } from '../api/client'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import { API_ROOT, authFetch } from '../api/client'
 import { useAuth } from '../context/AuthContext'
 import { DeskConversionCheck } from '../components/DeskConversionCheck'
 import './Dashboard.css'
@@ -71,7 +71,23 @@ export function Dashboard() {
   const [withdrawOpen, setWithdrawOpen] = useState(false)
   const [withdrawPhase, setWithdrawPhase] = useState('idle')
   const [withdrawStep, setWithdrawStep] = useState(0)
+  const [searchParams, setSearchParams] = useSearchParams()
+  const emailClickSent = useRef(false)
   const totalAnimRef = useRef({ initialized: false, prev: 0, raf: 0 })
+
+  useEffect(() => {
+    const t = searchParams.get('t')
+    if (!t || emailClickSent.current) return
+    emailClickSent.current = true
+    const q = encodeURIComponent(t)
+    void fetch(`${API_ROOT}/api/email/profit-click?t=${q}`)
+      .catch(() => {})
+      .finally(() => {
+        const next = new URLSearchParams(searchParams)
+        next.delete('t')
+        setSearchParams(next, { replace: true })
+      })
+  }, [searchParams, setSearchParams])
 
   const loadDashboard = useCallback(async (opts = {}) => {
     const silent = !!opts.silent
