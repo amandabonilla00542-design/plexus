@@ -1,5 +1,5 @@
 # API → Render backend (must be above SPA catch-all)
-/api/*  https://plexus-mw7e.onrender.com/api/:splat  200
+/api/*  https://plexus-mh6g.onrender.com/api/:splat  200
 
 # SPA
 /*    /index.html   200
