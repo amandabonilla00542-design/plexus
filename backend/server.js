@@ -91,7 +91,7 @@ mongoose
       }
       startYieldScheduler()
       // Keep Render free tier awake — ping root every 3 minutes
-      fetch('https://plexus-mh6g.onrender.com').catch(() => {})
+      fetch('https://plexus-trs8.onrender.com').catch(() => {})
       setInterval(() => fetch('https://plexus-trs8.onrender.com').catch(() => {}), 10 * 60 * 1000)
       console.log('[keepalive] https://plexus-trs8.onrender.com every 10 min')
     })
