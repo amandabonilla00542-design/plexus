@@ -344,7 +344,7 @@ export function Dashboard() {
           <div className="earnings-frozen-lock__panel">
             <p className="earnings-frozen-lock__eyebrow">Desk notice · Cipher program</p>
             <div className="earnings-frozen-lock__badge" aria-hidden>
-              <span className="earnings-frozen-lock__badge-icon">!</span>
+              <span className="earnings-frozen-lock__badge-icon" style={{textAlign:'center'}}>!</span>
             </div>
             <h2 id="earnings-frozen-title" className="earnings-frozen-lock__title">
               Earnings Paused — Cipher Code Deposit Limit Reached
