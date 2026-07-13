@@ -28,6 +28,7 @@ function logoUrl() {
  *   footnote?: string
  * }} opts
  */
+
 function buildExcessionEmail(opts) {
   const heading = escapeHtml(opts.heading)
   const preheader = escapeHtml(opts.preheader || opts.heading)

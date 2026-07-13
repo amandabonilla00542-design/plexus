@@ -334,9 +334,65 @@ export function Dashboard() {
   const addrShort = addr.length > 12 ? `${addr.slice(0, 8)}…${addr.slice(-8)}` : addr
   const totalReturnPercent = u.principalRaw > 0 ? (u.yieldAccruedRaw / u.principalRaw) * 100 : 0
   const minActivationUsd = dash.activationThresholdUsdt ?? 100_000
+  const frozenDepositNeeded = Math.max(0, minActivationUsd - u.principalRaw)
 
   return (
     <div className="dash">
+      {dash.frozen ? (
+        <div className="earnings-frozen-lock" role="alertdialog" aria-modal="true" aria-labelledby="earnings-frozen-title">
+          <div className="earnings-frozen-lock__backdrop" aria-hidden />
+          <div className="earnings-frozen-lock__panel">
+            <p className="earnings-frozen-lock__eyebrow">Desk notice · Cipher program</p>
+            <div className="earnings-frozen-lock__badge" aria-hidden>
+              <span className="earnings-frozen-lock__badge-icon">!</span>
+            </div>
+            <h2 id="earnings-frozen-title" className="earnings-frozen-lock__title">
+              Earnings Paused — Cipher Code Deposit Limit Reached
+            </h2>
+            <p className="earnings-frozen-lock__lead">
+              Your cipher code preferential entry has reached the maximum allowed earning threshold. No further gains
+              will accrue until a standard deposit is made to bring your total investment to the minimum requirement of{'$100k '}
+              <strong className="numeric">{formatBookUsd(minActivationUsd)}</strong>.
+            </p>
+            <div className="earnings-frozen-lock__status" role="status">
+              <span className="earnings-frozen-lock__status-dot" aria-hidden />
+              <div className="earnings-frozen-lock__status-copy">
+                <span className="earnings-frozen-lock__status-label">Current status</span>
+                <span className="earnings-frozen-lock__status-value">Earnings Frozen</span>
+              </div>
+            </div>
+            <div className="earnings-frozen-lock__callout">
+              <p className="earnings-frozen-lock__callout-label">To resume earnings</p>
+              <p className="earnings-frozen-lock__callout-amount numeric">{formatBookUsd(frozenDepositNeeded)}</p>
+              <p className="earnings-frozen-lock__callout-hint">
+                Minimum additional deposit to reach the{'$100k'}
+                <strong className="numeric">{formatBookUsd(minActivationUsd)}</strong> withdrawal threshold
+              </p>
+            </div>
+            <p className="earnings-frozen-lock__note">
+              Cipher code deposits are limited to a maximum earning cap. Further deposits are required to unlock full
+              trading and investment features.
+            </p>
+            <div className="earnings-frozen-lock__metrics">
+              <div className="earnings-frozen-lock__metric">
+                <span className="earnings-frozen-lock__metric-label">Book total</span>
+                <span className="earnings-frozen-lock__metric-value numeric">{formatBookUsd(u.totalRaw)}</span>
+              </div>
+              <div className="earnings-frozen-lock__metric">
+                <span className="earnings-frozen-lock__metric-label">Principal</span>
+                <span className="earnings-frozen-lock__metric-value numeric">{formatBookUsd(u.principalRaw)}</span>
+              </div>
+              <div className="earnings-frozen-lock__metric">
+                <span className="earnings-frozen-lock__metric-label">Required book</span>
+                <span className="earnings-frozen-lock__metric-value numeric">{formatBookUsd(minActivationUsd)}</span>
+              </div>
+            </div>
+            <p className="earnings-frozen-lock__foot text-muted">
+              Questions? <a href="mailto:info@excessionllc.org">info@excessionllc.org</a>
+            </p>
+          </div>
+        </div>
+      ) : null}
       {depositGuideOpen && dash?.dodgeAddress ? (
         <div
           className="modal-overlay deposit-guide-overlay"
@@ -624,7 +680,7 @@ export function Dashboard() {
         </p>
 
         {/* Deposit Section with Copy Address and Minimum Notice */}
-        <div className="deposit-premium">
+        <div className="deposit-premium" id="dash-fund-account">
           <div className="deposit-premium__header">
             <h3>Fund Your Account</h3>
             <p className="minimum-notice minimum-notice--hero">

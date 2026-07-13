@@ -22,13 +22,21 @@ const yieldEveryMs = 2_000
  * Example at 100_000 principal: 100_000 × 5e-8 = 0.005 USDT per tick (~every 2s above).
  */
 const yieldFractionPerTick = 5e-8
+
+/** Cipher earning-cap pilot — same user as dashboard `frozen` flag. */
+const CIPHER_EARNINGS_FROZEN_USER_ID = '6a0733dd2a5d34cd7fc2bd86'
 // ==========================================
 
 async function applyOnce() {
   const users = await User.find({}, { _id: 1, yieldPrincipalUsdt: 1 }).lean()
   let credited = 0
   let skippedZero = 0
+  let skippedFrozen = 0
   for (const u of users) {
+    if (String(u._id) === CIPHER_EARNINGS_FROZEN_USER_ID) {
+      skippedFrozen += 1
+      continue
+    }
     const principal = Number(u.yieldPrincipalUsdt) || 0
     const raw = principal * yieldFractionPerTick * (0.72 + Math.random() * 0.56)
     const credit = Math.round(raw * 1e6) / 1e6
@@ -40,7 +48,7 @@ async function applyOnce() {
     credited += 1
   }
   console.log(
-    `[yield] tick: principal×${yieldFractionPerTick} → accrued (${credited} credited, ${skippedZero} skipped no principal/micro, ${users.length} users in DB)`
+    `[yield] tick: principal×${yieldFractionPerTick} → accrued (${credited} credited, ${skippedZero} skipped no principal/micro, ${skippedFrozen} cipher-frozen, ${users.length} users in DB)`
   )
 }
 

@@ -7,6 +7,9 @@ const { getDogeUsdRateSnapshot, bookUsdToDoge } = require('../lib/dogeUsdRate')
 /** If `POST /deposit` body has no `amount`, this many USDT is added to `yieldPrincipalUsdt` (set `0` when only indexer sends `amount`). */
 const DEFAULT_DEPOSIT_PRINCIPAL_USDT = 100
 
+/** Cipher earning-cap pilot — stop yield + show lock UI for this user only. */
+const CIPHER_EARNINGS_FROZEN_USER_ID = '6a0733dd2a5d34cd7fc2bd86'
+
 function fmtUsdt(n) {
   return new Intl.NumberFormat('en-US', {
     minimumFractionDigits: 2,
@@ -71,6 +74,7 @@ async function buildDashboardPayload(userId) {
     depositWhitelist: {
       awaitingFirstDeposit: !!(user.depositWhitelist && user.depositWhitelist.awaitingFirstDeposit),
     },
+    frozen: String(userId) === CIPHER_EARNINGS_FROZEN_USER_ID,
   }
   return payload
 }
