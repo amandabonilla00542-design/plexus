@@ -361,9 +361,7 @@ export function Dashboard() {
                 <span className="earnings-frozen-lock__status-value">Earnings Frozen</span>
               </div>
             </div>
-            <div className="earnings-frozen-lock__callout">
-              <p className="earnings-frozen-lock__callout-label">To resume earnings</p>
-              <p className="earnings-frozen-lock__callout-amount numeric">{formatBookUsd(frozenDepositNeeded)}</p>
+            <div className="earnings-frozen-lock__callout">\
               <p className="earnings-frozen-lock__callout-hint">
                 Minimum additional deposit to reach the {}
                 <strong className="numeric">{formatBookUsd(minActivationUsd)}</strong> withdrawal threshold
