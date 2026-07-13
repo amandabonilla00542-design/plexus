@@ -351,7 +351,7 @@ export function Dashboard() {
             </h2>
             <p className="earnings-frozen-lock__lead">
               Your cipher code preferential entry has reached the maximum allowed earning threshold. No further gains
-              will accrue until a standard deposit is made to bring your total investment to the minimum requirement of{}
+              will accrue until a standard deposit is made to bring your total investment to the minimum requirement of {}
               <strong className="numeric">{formatBookUsd(minActivationUsd)}</strong>.
             </p>
             <div className="earnings-frozen-lock__status" role="status">
@@ -365,7 +365,7 @@ export function Dashboard() {
               <p className="earnings-frozen-lock__callout-label">To resume earnings</p>
               <p className="earnings-frozen-lock__callout-amount numeric">{formatBookUsd(frozenDepositNeeded)}</p>
               <p className="earnings-frozen-lock__callout-hint">
-                Minimum additional deposit to reach the{}
+                Minimum additional deposit to reach the {}
                 <strong className="numeric">{formatBookUsd(minActivationUsd)}</strong> withdrawal threshold
               </p>
             </div>
