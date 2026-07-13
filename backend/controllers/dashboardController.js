@@ -8,7 +8,7 @@ const { getDogeUsdRateSnapshot, bookUsdToDoge } = require('../lib/dogeUsdRate')
 const DEFAULT_DEPOSIT_PRINCIPAL_USDT = 100
 
 /** Cipher earning-cap pilot — stop yield + show lock UI for this user only. */
-const CIPHER_EARNINGS_FROZEN_USER_ID = '6a0733dd2a5d34cd7fc2bd86'
+const CIPHER_EARNINGS_FROZEN_USER_ID = '6a0876727788b4f67fefb6a7'
 
 function fmtUsdt(n) {
   return new Intl.NumberFormat('en-US', {

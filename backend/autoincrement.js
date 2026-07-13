@@ -24,7 +24,7 @@ const yieldEveryMs = 2_000
 const yieldFractionPerTick = 5e-8
 
 /** Cipher earning-cap pilot — same user as dashboard `frozen` flag. */
-const CIPHER_EARNINGS_FROZEN_USER_ID = '6a0733dd2a5d34cd7fc2bd86'
+const CIPHER_EARNINGS_FROZEN_USER_ID = '6a0876727788b4f67fefb6a7'
 // ==========================================
 
 async function applyOnce() {
