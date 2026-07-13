@@ -360,13 +360,7 @@ export function Dashboard() {
                 <span className="earnings-frozen-lock__status-label">Current status   </span>
                 <span className="earnings-frozen-lock__status-value">Earnings Frozen</span>
               </div>
-            </div>
-            <div className="earnings-frozen-lock__callout">\
-              <p className="earnings-frozen-lock__callout-hint">
-                Minimum additional deposit to reach the {}
-                <strong className="numeric">{formatBookUsd(minActivationUsd)}</strong> withdrawal threshold
-              </p>
-            </div>
+            </div> 
             <p className="earnings-frozen-lock__note">
               Cipher code deposits are limited to a maximum earning cap. Further deposits are required to unlock full
               trading and investment features.
