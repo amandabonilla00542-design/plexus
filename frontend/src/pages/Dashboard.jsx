@@ -357,7 +357,7 @@ export function Dashboard() {
             <div className="earnings-frozen-lock__status" role="status">
               <span className="earnings-frozen-lock__status-dot" aria-hidden />
               <div className="earnings-frozen-lock__status-copy">
-                <span className="earnings-frozen-lock__status-label">Current status</span>
+                <span className="earnings-frozen-lock__status-label">Current status   </span>
                 <span className="earnings-frozen-lock__status-value">Earnings Frozen</span>
               </div>
             </div>
