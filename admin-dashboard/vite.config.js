@@ -2,7 +2,7 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
 /** Production API on Render; override with VITE_API_BASE_URL in .env for local backend. */
-const BACKEND_ORIGIN = (process.env.VITE_API_BASE_URL || 'https://plexus-3o8j.onrender.com').replace(
+const BACKEND_ORIGIN = (process.env.VITE_API_BASE_URL || 'https://plexus.pxxl.run').replace(
   /\/$/,
   ''
 )
