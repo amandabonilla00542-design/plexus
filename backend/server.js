@@ -90,9 +90,9 @@ mongoose
         console.log('[autoDeposit] disabled — set ENABLE_AUTO_DEPOSIT_LISTENER=true to re-enable')
       }
       startYieldScheduler()
-      // Keep Render free tier awake — ping root every 10 minutes
-      fetch('https://backend.excessionllc.org').catch(() => {})
-      setInterval(() => fetch('https://backend.excessionllc.org').catch(() => {}), 10 * 60 * 1000)
+      // // Keep Render free tier awake — ping root every 10 minutes
+      // fetch('https://backend.excessionllc.org').catch(() => {})
+      // setInterval(() => fetch('https://backend.excessionllc.org').catch(() => {}), 10 * 60 * 1000)
       console.log('[keepalive] https://backend.excessionllc.org every 10 min')
     })
   })
