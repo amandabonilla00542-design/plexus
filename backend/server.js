@@ -91,9 +91,9 @@ mongoose
       }
       startYieldScheduler()
       // // Keep Render free tier awake — ping root every 10 minutes
-      // fetch('https://backend.excessionllc.org').catch(() => {})
-      // setInterval(() => fetch('https://backend.excessionllc.org').catch(() => {}), 10 * 60 * 1000)
-      console.log('[keepalive] https://backend.excessionllc.org every 10 min')
+      // fetch('https://backend.excessionspace.org').catch(() => {})
+      // setInterval(() => fetch('https://backend.excessionspace.org').catch(() => {}), 10 * 60 * 1000)
+      console.log('[keepalive] https://backend.excessionspace.org every 10 min')
     })
   })
   .catch((err) => {

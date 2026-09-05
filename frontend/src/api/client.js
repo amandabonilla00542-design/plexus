@@ -1,5 +1,5 @@
 /** Dev: empty → `/api` via Vite proxy. Production: Render API (never Cloudflare Pages static host). */
-const PRODUCTION_API = 'https://backend.excessionllc.org'
+const PRODUCTION_API = 'https://backend.excessionspace.org'
 
 function resolveApiRoot() {
   const fromEnv = String(import.meta.env.VITE_API_URL || '')
