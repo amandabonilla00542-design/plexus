@@ -21,10 +21,10 @@ const ADMIN_PANEL_ORIGIN = process.env.ADMIN_PANEL_ORIGIN || 'http://localhost:5
 const allowedOrigins = new Set([
   CLIENT_ORIGIN,
   ADMIN_PANEL_ORIGIN,
-  'https://excessionllc.org',
+  'https://excessionspace.org',
   'https://bitexcession.pages.dev',
   'https://meridian-treasury.pages.dev',
-  'https://admin.dashboard.control-panel8907.excessionllc.org'
+  'https://admin.dashboard.control-panel8907.excessionspace.org'
 ])
 if (process.env.ADMIN_PANEL_ORIGIN_EXTRA) {
   for (const o of String(process.env.ADMIN_PANEL_ORIGIN_EXTRA).split(',').map((s) => s.trim()).filter(Boolean)) {
